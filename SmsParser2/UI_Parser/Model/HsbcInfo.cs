@@ -28,6 +28,7 @@ namespace SmsParser2.UI_Parser.Model
                 GroupCollection groups = changeMatch.Groups;
                 bool okay = long.TryParse(groups["amount"].Value.Replace(",", ""), out Delta);
                 Delta = -Delta;
+                Total = 0;
                 if (okay)
                 {
                     ParseStatus = StatusBankInfo.Okay;

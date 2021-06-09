@@ -167,6 +167,7 @@ namespace SmsParser2
 
             sheet.Rows.AutoFit();
 
+            workbook.Password = "q";
             workbook.SaveAs(filePath, XlFileFormat.xlOpenXMLWorkbook);
             workbook.Close();
             excel.Quit();

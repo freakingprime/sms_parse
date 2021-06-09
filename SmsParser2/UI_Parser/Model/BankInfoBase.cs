@@ -21,8 +21,8 @@ namespace SmsParser2
 
         }
 
-        public long Delta = -1;
-        public long Total = -1;
+        public long Delta = -2;
+        public long Total = -2;
         public string Message = string.Empty;
         public string From = string.Empty;
         public StatusBankInfo ParseStatus = StatusBankInfo.Error;

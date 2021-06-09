@@ -103,7 +103,15 @@ namespace SmsParser2
             list.Add(MyBankInfo.Delta + "");
             list.Add(MyBankInfo.Total + "");
             list.Add("T " + MyBankInfo.TimeString);
-            list.Add(MyBankInfo.Reference);
+            if (MyBankInfo.Reference.Length > 0)
+            {
+                list.Add(MyBankInfo.Reference);
+            }
+            else
+            {
+                list.Add("Full: " + Body);
+            }
+
             return list.ToArray();
         }
     }
