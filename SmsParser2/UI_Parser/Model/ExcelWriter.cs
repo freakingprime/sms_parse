@@ -14,7 +14,6 @@ namespace SmsParser2
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
-
         public ExcelWriter(string[] arrHeader)
         {
             this.header = arrHeader;
@@ -121,7 +120,7 @@ namespace SmsParser2
             Worksheet sheet2 = (Worksheet)workbook.Worksheets.get_Item(2);
             sheet2.Name = DateTime.Now.ToString("Bank");
 
-            numRows = listSmsInfo.Count(x => x.Bank != null && x.Bank.ParseStatus != StatusBankInfo.Ignored) + 1;
+            numRows = listSmsInfo.Count(x => x.MyBankInfo != null && x.MyBankInfo.ParseStatus != StatusBankInfo.Ignored) + 1;
             numCols = SmsInfo.BANK_HEADER.Length;
             var data2 = new object[numRows, numCols];
 
@@ -134,7 +133,7 @@ namespace SmsParser2
 
             foreach (SmsInfo item in listSmsInfo)
             {
-                if (item.Bank != null && item.Bank.ParseStatus != StatusBankInfo.Ignored)
+                if (item.MyBankInfo != null && item.MyBankInfo.ParseStatus != StatusBankInfo.Ignored)
                 {
                     object[] col = item.GetBankArray();
                     for (int j = 0; j < col.Length; ++j)

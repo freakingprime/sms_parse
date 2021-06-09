@@ -126,18 +126,21 @@ namespace SmsParser2.UI_Parser.ViewModel
             TxtOutputFolder = TxtOutputFolder.Trim();
             TxtFilenamePrefix = TxtFilenamePrefix.Trim();
 
-            string input = TxtXMLFilePath;
-            string output = TxtOutputFolder;
-            while (output.EndsWith("\\")) output = output.Remove(output.Length - 1);
+            string inputFilePath = TxtXMLFilePath;
+            string outputFolder = TxtOutputFolder;
+            while (outputFolder.EndsWith("\\"))
+            {
+                outputFolder = outputFolder.Remove(outputFolder.Length - 1);
+            }
 
             int width = 60;
             int.TryParse(TxtExcelColumnWidth.Trim(), out width);
             if (width < 5) width = 60;
 
-            if (File.Exists(input) && Directory.Exists(output) && TxtFilenamePrefix.Length > 0)
+            if (File.Exists(inputFilePath) && Directory.Exists(outputFolder) && TxtFilenamePrefix.Length > 0)
             {
-                MySetting.Default.LastOpenedFile = input;
-                MySetting.Default.LastOutputFolder = output;
+                MySetting.Default.LastOpenedFile = inputFilePath;
+                MySetting.Default.LastOutputFolder = outputFolder;
                 MySetting.Default.FileNamePrefix = TxtFilenamePrefix;
                 MySetting.Default.BodyColumnWidth = width;
                 MySetting.Default.Save();
@@ -145,14 +148,14 @@ namespace SmsParser2.UI_Parser.ViewModel
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += (ws, we) =>
                 {
-                    readFile(input);
+                    ReadFile(inputFilePath);
                     //logBankInfo();
-                    process(output);
+                    Process(outputFolder);
                 };
                 worker.RunWorkerCompleted += (ws, we) =>
                 {
                     IsButtonEnabled = true;
-                    MessageBox.Show("Exported to " + output, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Exported to " + outputFolder, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 };
                 IsButtonEnabled = false;
                 worker.RunWorkerAsync();
@@ -177,10 +180,10 @@ namespace SmsParser2.UI_Parser.ViewModel
             log.Info(string.Format("XML {0} | Output {1} | Column width {2} | Prefix {3}", TxtXMLFilePath, TxtOutputFolder, TxtExcelColumnWidth, TxtFilenamePrefix));
         }
 
-        private void readFile(string path)
+        private void ReadFile(string filePath)
         {
-            log.Debug("Read data from file: " + path);
-            string str = File.ReadAllText(path);
+            log.Debug("Read data from file: " + filePath);
+            string str = File.ReadAllText(filePath);
             Regex regexXml = new Regex(@"<sms.+\/>");
             MatchCollection matchSmsTag = regexXml.Matches(str);
             listSms.Clear();
@@ -192,20 +195,20 @@ namespace SmsParser2.UI_Parser.ViewModel
             listSms.Sort((x, y) => y.DateAsNumber.CompareTo(x.DateAsNumber));
         }
 
-        private void process(string folder)
+        private void Process(string outputFolder)
         {
-            log.Debug("Process data to folder: " + folder);
+            log.Debug("Process data to folder: " + outputFolder);
             ExcelWriter writer = new ExcelWriter(SmsInfo.EXCEL_HEADER);
             log.Debug("Created new excel writer");
             writer.TestFunction();
-            writer.ExportSmsInfo(listSms, folder + "\\" + TxtFilenamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+            writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
             log.Debug("Finish process data");
         }
 
         private void logBankInfo()
         {
-            var list = listSms.Select(i => i.Bank).Where(i => i != null && i.ParseStatus != StatusBankInfo.Ignored);
-            foreach (BankInfo item in list)
+            var list = listSms.Select(i => i.MyBankInfo).Where(i => i != null && i.ParseStatus != StatusBankInfo.Ignored);
+            foreach (BankInfoBase item in list)
             {
                 log.Debug(item.ToString());
             }

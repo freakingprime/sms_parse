@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmsParser2.UI_Parser.Model;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace SmsParser2
         public DateTime Date = new DateTime();
         public string ContactName = String.Empty;
         public CultureInfo enUS = new CultureInfo("en-US");
-        public BankInfo Bank = null;
+        public BankInfoBase MyBankInfo = null;
 
         private string getValue(string key, string text)
         {
@@ -55,13 +56,21 @@ namespace SmsParser2
                 log.Error("Cannot parse to DateTime: " + ReadableDate);
             }
             ContactName = getValue("contact_name", xmlText);
-            if (Address.Equals(BankInfo.NAME_VIETCOMBANK))
+            if (Address.Equals(VietcomInfo.SENDER_NAME))
             {
-                Bank = new BankInfo(Body);
-                if (Bank.ParseStatus == StatusBankInfo.Error)
-                {
-                    log.Error("Cannot parse BankInfo: " + Body);
-                }
+                MyBankInfo = new VietcomInfo(Body);
+            }
+            else if (Address.Contains(ShinhanInfo.SENDER_NAME))
+            {
+                MyBankInfo = new ShinhanInfo(Body);
+            }
+            else if (Address.Contains(HsbcInfo.SENDER_NAME))
+            {
+                MyBankInfo = new HsbcInfo(Body);
+            }
+            if (MyBankInfo != null && MyBankInfo.ParseStatus == StatusBankInfo.Error)
+            {
+                log.Error("Cannot parse BankInfo from " + Address + ": " + Body);
             }
         }
 
@@ -91,17 +100,10 @@ namespace SmsParser2
             List<string> list = new List<string>();
             list.Add(Address);
             list.Add(ReadableDate);
-            list.Add(Bank.Delta + "");
-            list.Add(Bank.Total + "");
-            list.Add("T " + Bank.Time);
-            //if (Bank.Reference.Length > 0)
-            //{
-            //    list.Add("'" + Bank.Reference);
-            //}
-            //else
-            {
-                list.Add("'" + Body);
-            }
+            list.Add(MyBankInfo.Delta + "");
+            list.Add(MyBankInfo.Total + "");
+            list.Add("T " + MyBankInfo.TimeString);
+            list.Add(MyBankInfo.Reference);
             return list.ToArray();
         }
     }
