@@ -31,6 +31,18 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>MySetting.settings</DependentUpon>
     </Compile>
+    <Compile Update="Resource1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resource1.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -42,5 +54,9 @@
       <LastGenOutput>MySetting.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="set mydate=%25date:~12,4%25%25date:~7,2%25%25date:~4,2%25&#xD;&#xA;echo %25mydate%25 &gt; &quot;$(ProjectDir)\BuildTime.txt&quot;" />
+  </Target>
 
 </Project>

@@ -111,7 +111,6 @@ namespace SmsParser2
             {
                 list.Add("Full: " + Body);
             }
-
             return list.ToArray();
         }
     }

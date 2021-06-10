@@ -31,6 +31,10 @@ namespace SmsParser2
         {
             InitializeComponent();
             log.Debug("Application start at: " + DateTime.Now.ToString());
+            this.Title = Resource1.TITLE + " " + Resource1.VERSION + "." + Resource1.BuildTime.Trim();
+#if DEBUG
+            this.Title = this.Title + " debug";
+#endif
         }
 
         private void BtnTest_Click(object sender, RoutedEventArgs e)
