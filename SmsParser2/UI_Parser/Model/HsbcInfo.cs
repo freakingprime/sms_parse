@@ -34,11 +34,41 @@ namespace SmsParser2.UI_Parser.Model
                     ParseStatus = StatusBankInfo.Okay;
                 }
             }
+            else
+            {
+                changeMatch = regexChange2.Match(lower);
+                if (changeMatch.Success)
+                {
+                    //giao dich bi huy
+                    GroupCollection groups = changeMatch.Groups;
+                    bool okay = long.TryParse(groups["amount"].Value.Replace(",", ""), out Delta);
+                    Total = 0;
+                    if (okay)
+                    {
+                        ParseStatus = StatusBankInfo.Okay;
+                    }
+                }
+                else
+                {
+                    changeMatch = regexChange3.Match(lower);
+                    if (changeMatch.Success)
+                    {
+                        //giao dich khac
+                        GroupCollection groups = changeMatch.Groups;
+                        bool okay = long.TryParse(groups["amount"].Value.Replace(",", ""), out Delta);
+                        Delta = -Delta;
+                        Total = 0;
+                        if (okay)
+                        {
+                            ParseStatus = StatusBankInfo.Okay;
+                        }
+                    }
+                }
+            }
         }
-
-        private Regex regexChange1 = new Regex(@"the td.+?6291.+?VND(?<amount>[\d,]+)", RegexOptions.IgnoreCase);
-        private Regex regexChange2 = new Regex(@"giao dich bi huy.+?(?<date>\d\d-\d\d-\d\d\d\d)\/(?<time>\d\d:\d\d)\/(?<amount>[\d,]+)\/(?<ref>.+),han muc.+?(?<hanmuc>[\d,]+)", RegexOptions.IgnoreCase);
-        private Regex regexChange3 = new Regex(@"tk.+thay doi\s+(?<sign>[+-])\s+VND\s+(?<amount>[\d,]+).+?so du kha dung.+?(?<sodu>[\d,]+)[.\s]+(?<ref>.+)", RegexOptions.IgnoreCase);
+        private Regex regexChange1 = new Regex(@"the td.+?6291.+?thuc hien.+?VND(?<amount>[\d,]+)", RegexOptions.IgnoreCase);
+        private Regex regexChange2 = new Regex(@"the td.+?6291.+?bi huy.+?VND(?<amount>[\d,]+)", RegexOptions.IgnoreCase);
+        private Regex regexChange3 = new Regex(@"the td.+?6291.+?VND(?<amount>[\d,]+)", RegexOptions.IgnoreCase);
 
         private string[] ignoredKeywords = { "otp", "du no cuoi ky", "card.apply.hsbc" };
 
