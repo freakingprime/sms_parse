@@ -28,6 +28,8 @@
                 <sys:Int32 x:Key="ColButton">2</sys:Int32>
                 <Style TargetType="{x:Type Button}">
                     <Setter Property="Margin" Value="2"/>
+                    <Setter Property="Width" Value="70"/>
+                    <Setter Property="HorizontalAlignment" Value="Left"/>
                 </Style>
                 <Style TargetType="{x:Type TextBox}">
                     <Setter Property="Margin" Value="2"/>
@@ -38,8 +40,8 @@
             </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="150"/>
-                <ColumnDefinition Width="{StaticResource GridButtonWidth}"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -49,8 +51,15 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowXMLFile}" Text="XML File" />
-            <TextBox Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowXMLFile}" Name="TextXmlFile" Text="{Binding TxtXMLFilePath}"/>
-            <Button Grid.Column="{StaticResource ColButton}" Grid.Row="{StaticResource RowXMLFile}" Name="BtnBrowseXMLFile" Click="BtnBrowseXMLFile_Click" Content="Browse"/>
+            <StackPanel Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowXMLFile}">
+                <TextBox Name="TextXmlFile" Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" TextChanged="TextXmlFile_TextChanged"/>
+                <TextBlock x:Name="TxtXMLFileName"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="{StaticResource ColButton}" Grid.Row="{StaticResource RowXMLFile}" Orientation="Horizontal">
+                <Button Name="BtnBrowseXMLFile" Click="BtnBrowseXMLFile_Click" Content="Browse"/>
+                <Button x:Name="BtnLoadLatest" Click="BtnLoadLatest_Click" Content="Load Latest"/>
+            </StackPanel>
 
             <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowOutputFile}" Text="Output Folder" />
             <TextBox Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowOutputFile}" Name="TextOutputFile" Text="{Binding TxtOutputFolder}"/>

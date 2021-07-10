@@ -73,13 +73,38 @@ namespace SmsParser2.UI_Parser.ViewModel
 
         #region Button command
 
+        public void BtnLoadLatestFile()
+        {
+            string lastFile = MySetting.Default.LastOpenedFile;
+            if (!File.Exists(lastFile))
+            {
+                while (!Directory.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
+                {
+                    lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
+                }
+            }
+            string[] files = Directory.GetFiles(lastFile);
+            Array.Sort(files);
+            foreach (var s in files)
+            {
+                if (s.Contains("sms"))
+                {
+                    lastFile = s;
+                }
+            }
+            TxtXMLFilePath = lastFile;
+        }
+
         public void BtnBrowseXmlFileClick()
         {
             log.Info("Clicked button browse XML file");
             string lastFile = MySetting.Default.LastOpenedFile;
-            while (!File.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
+            if (!File.Exists(lastFile))
             {
-                lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
+                while (!Directory.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
+                {
+                    lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
+                }
             }
             OpenFileDialog dialog = new OpenFileDialog
             {

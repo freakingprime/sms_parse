@@ -80,5 +80,18 @@ namespace SmsParser2.UI_Parser.View
                 log.Error("Data context is changed but it's null");
             }
         }
+
+        private void BtnLoadLatest_Click(object sender, RoutedEventArgs e)
+        {
+            if (context != null)
+            {
+                context.BtnLoadLatestFile();
+            }
+        }
+
+        private void TextXmlFile_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TxtXMLFileName.Text = System.IO.Path.GetFileName(TextXmlFile.Text);
+        }
     }
 }
