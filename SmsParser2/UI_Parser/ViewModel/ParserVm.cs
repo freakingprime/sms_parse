@@ -83,16 +83,20 @@ namespace SmsParser2.UI_Parser.ViewModel
                     lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
                 }
             }
+            else
+            {
+                lastFile = Path.GetDirectoryName(lastFile);
+            }
             string[] files = Directory.GetFiles(lastFile);
             Array.Sort(files);
-            foreach (var s in files)
+            for (int i = files.Length - 1; i >= 0; --i)
             {
-                if (s.Contains("sms"))
+                if (files[i].Contains("sms"))
                 {
-                    lastFile = s;
+                    TxtXMLFilePath = files[i];
+                    break;
                 }
             }
-            TxtXMLFilePath = lastFile;
         }
 
         public void BtnBrowseXmlFileClick()
@@ -203,6 +207,7 @@ namespace SmsParser2.UI_Parser.ViewModel
             TxtExcelColumnWidth = MySetting.Default.BodyColumnWidth.ToString();
             TxtFilenamePrefix = MySetting.Default.FileNamePrefix;
             log.Info(string.Format("XML {0} | Output {1} | Column width {2} | Prefix {3}", TxtXMLFilePath, TxtOutputFolder, TxtExcelColumnWidth, TxtFilenamePrefix));
+            log.Info("Load setting successfully");
         }
 
         private void ReadFile(string filePath)

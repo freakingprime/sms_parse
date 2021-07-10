@@ -91,7 +91,10 @@ namespace SmsParser2.UI_Parser.View
 
         private void TextXmlFile_TextChanged(object sender, TextChangedEventArgs e)
         {
-            TxtXMLFileName.Text = System.IO.Path.GetFileName(TextXmlFile.Text);
+            if (TxtXMLFileName != null)
+            {
+                TxtXMLFileName.Text = System.IO.Path.GetFileName(TextXmlFile.Text);
+            }            
         }
     }
 }
