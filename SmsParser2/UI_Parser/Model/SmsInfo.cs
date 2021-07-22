@@ -68,6 +68,10 @@ namespace SmsParser2
             {
                 MyBankInfo = new HsbcInfo(Body);
             }
+            else if (Address.Contains(VpbankInfo.SENDER_NAME))
+            {
+                MyBankInfo = new VpbankInfo(Body);
+            }
             if (MyBankInfo != null && MyBankInfo.ParseStatus == StatusBankInfo.Error)
             {
                 log.Error("Cannot parse BankInfo from " + Address + ": " + Body);

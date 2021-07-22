@@ -52,8 +52,8 @@
 
             <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowXMLFile}" Text="XML File" />
             <StackPanel Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowXMLFile}">
-                <TextBox Name="TextXmlFile" Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" TextChanged="TextXmlFile_TextChanged"/>
-                <TextBlock x:Name="TxtXMLFileName"/>
+                <TextBox Name="TextXmlFile" Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" />
+                <TextBlock x:Name="TxtXMLFileName" Text="{Binding TxtXMLFileName}"/>
             </StackPanel>
 
             <StackPanel Grid.Column="{StaticResource ColButton}" Grid.Row="{StaticResource RowXMLFile}" Orientation="Horizontal">

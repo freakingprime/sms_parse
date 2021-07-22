@@ -88,13 +88,5 @@ namespace SmsParser2.UI_Parser.View
                 context.BtnLoadLatestFile();
             }
         }
-
-        private void TextXmlFile_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (TxtXMLFileName != null)
-            {
-                TxtXMLFileName.Text = System.IO.Path.GetFileName(TextXmlFile.Text);
-            }            
-        }
     }
 }

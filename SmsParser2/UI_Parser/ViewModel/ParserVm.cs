@@ -22,12 +22,27 @@ namespace SmsParser2.UI_Parser.ViewModel
 
         #region Bind properties
 
+        private string _txtXMLFileName;
+
+        public string TxtXMLFileName
+        {
+            get { return _txtXMLFileName; }
+            set { SetValue(ref _txtXMLFileName, value); }
+        }
+
+
         private string _txtXMLFilePath;
 
         public string TxtXMLFilePath
         {
             get { return _txtXMLFilePath; }
-            set { SetValue(ref _txtXMLFilePath, value); }
+            set
+            {
+                SetValue(ref _txtXMLFilePath, value);
+                TxtXMLFileName = Path.GetFileName(value);
+                MySetting.Default.LastOpenedFile = value;
+                MySetting.Default.Save();
+            }
         }
 
         private string _txtOutputFolder;
