@@ -246,7 +246,9 @@ namespace SmsParser2.UI_Parser.ViewModel
             ExcelWriter writer = new ExcelWriter(SmsInfo.EXCEL_HEADER);
             log.Debug("Created new excel writer");
             writer.TestFunction();
-            writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+            //writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+            //2021.06.08: Disable date suffix
+            writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + ".xlsx");
             log.Debug("Finish process data");
         }
 
