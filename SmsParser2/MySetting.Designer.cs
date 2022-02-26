@@ -12,7 +12,7 @@ namespace SmsParser2 {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class MySetting : global::System.Configuration.ApplicationSettingsBase {
         
         private static MySetting defaultInstance = ((MySetting)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new MySetting())));
@@ -68,6 +68,30 @@ namespace SmsParser2 {
             }
             set {
                 this["FileNamePrefix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastVietcomFolder {
+            get {
+                return ((string)(this["LastVietcomFolder"]));
+            }
+            set {
+                this["LastVietcomFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastNewVietcomFolder {
+            get {
+                return ((string)(this["LastNewVietcomFolder"]));
+            }
+            set {
+                this["LastNewVietcomFolder"] = value;
             }
         }
     }

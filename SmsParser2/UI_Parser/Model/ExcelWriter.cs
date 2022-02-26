@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
-namespace SmsParser2
+namespace SmsParser2.UI_Parser.Model
 {
     public class ExcelWriter
     {
@@ -112,6 +112,7 @@ namespace SmsParser2
             sheet.Columns.AutoFit();
             ((Range)sheet.Columns[colHash["body"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
             ((Range)sheet.Columns[colHash["body"] + 1]).WrapText = true;
+            ((Range)sheet.Columns[colHash["address"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
             ((Range)sheet.Columns[colHash["address"] + 1]).HorizontalAlignment = XlHAlign.xlHAlignLeft;
 
             sheet.Rows.AutoFit();
@@ -177,6 +178,92 @@ namespace SmsParser2
             Marshal.ReleaseComObject(workbooks);
             Marshal.ReleaseComObject(excel);
             Marshal.FinalReleaseComObject(excel);
+
+            log.Debug("Finish writing in " + stopwatch.ElapsedMilliseconds + " ms");
+            stopwatch.Stop();
+        }
+
+        public static Microsoft.Office.Interop.Excel.Application GlobalExcel;
+
+        public void ExportVietcomInfo(List<VietcomInfo> listVietcomInfo, string filePath)
+        {
+            log.Debug("Writing: " + filePath);
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            if (GlobalExcel == null)
+            {
+                GlobalExcel = new Microsoft.Office.Interop.Excel.Application();
+                if (GlobalExcel == null)
+                {
+                    log.Error("Excel is not properly installed");
+                    return;
+                }
+            }
+            GlobalExcel.DisplayAlerts = false;
+            Workbooks workbooks = GlobalExcel.Workbooks;
+            Workbook workbook = workbooks.Add(misValue);
+            Worksheet sheet = (Worksheet)workbook.Worksheets.get_Item(1);
+            sheet.Name = "Vietcombank";
+
+            int numRows = listVietcomInfo.Count + 1;
+            int numCols = header.Length;
+            var data = new object[numRows, numCols];
+
+            for (int j = 0; j < numCols; ++j)
+            {
+                data[0, j] = header[j];
+            }
+
+            int rowIndex = 1;
+
+            foreach (VietcomInfo info in listVietcomInfo)
+            {
+                object[] col = info.GetValueArray();
+                for (int j = 0; j < col.Length; ++j)
+                {
+                    data[rowIndex, j] = col[j];
+                }
+                ++rowIndex;
+            }
+
+            dumpArrayToSheet(sheet, data);
+
+            // Format file
+
+            sheet.Application.ActiveWindow.SplitRow = 1;
+            sheet.Application.ActiveWindow.FreezePanes = true;
+            sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignTop;
+
+            //first row with filter and bold text
+            Range firstRow = (Range)sheet.Rows[1];
+            firstRow.AutoFilter(1);
+            firstRow.Font.Bold = true;
+
+            sheet.UsedRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+
+            //format number columns
+            ((Range)sheet.Columns[colHash["amount"] + 1]).NumberFormat = "#,##0";
+            ((Range)sheet.Columns[colHash["balance"] + 1]).Style = "Comma [0]";
+
+            sheet.UsedRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+            sheet.Columns.AutoFit();
+
+            //set ref column width after auto fit
+            ((Range)sheet.Columns[colHash["ref"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
+            ((Range)sheet.Columns[colHash["ref"] + 1]).WrapText = true;
+
+            sheet.Rows.AutoFit();
+
+            workbook.Password = "q";
+            workbook.SaveAs(filePath, XlFileFormat.xlOpenXMLWorkbook);
+            workbook.Close();
+            GlobalExcel.Quit();
+
+            // Release our resources.
+            _ = Marshal.ReleaseComObject(workbook);
+            _ = Marshal.ReleaseComObject(workbooks);
+            _ = Marshal.ReleaseComObject(GlobalExcel);
+            _ = Marshal.FinalReleaseComObject(GlobalExcel);
 
             log.Debug("Finish writing in " + stopwatch.ElapsedMilliseconds + " ms");
             stopwatch.Stop();

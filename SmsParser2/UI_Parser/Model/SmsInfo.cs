@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace SmsParser2
+namespace SmsParser2.UI_Parser.Model
 {
     public class SmsInfo
     {

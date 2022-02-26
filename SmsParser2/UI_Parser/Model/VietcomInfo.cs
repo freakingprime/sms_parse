@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SmsParser2.UI_Parser.Model
 {
-    public class VietcomInfo : BankInfoBase
+    public class VietcomInfo : BankInfoBase, IComparable<VietcomInfo>, IEquatable<VietcomInfo>
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
@@ -40,6 +41,11 @@ namespace SmsParser2.UI_Parser.Model
             }
         }
 
+        public VietcomInfo()
+        {
+
+        }
+
         private readonly Regex regexChange = new Regex(@"(so du tk vcb|sd tk)\s*\d+.*?([+-][\d,]+)\s*vnd", RegexOptions.IgnoreCase);
         private readonly Regex regexTime = new Regex(@"luc ([\d\s-:]+)", RegexOptions.IgnoreCase);
         private readonly Regex regexTotal = new Regex(@"\.\s*(sd|so du)\s+([\d,]+)\s*vnd", RegexOptions.IgnoreCase);
@@ -48,5 +54,34 @@ namespace SmsParser2.UI_Parser.Model
         private readonly string[] ignoredKeywords = { "quy khach", "thu phi", "ma otp", "the vcb visa", "huy giao dich tren", "smartotp", "1900545413" };
 
         public const string SENDER_NAME = "vietcombank";
+
+        public DateTime Date = DateTime.MinValue;
+
+        public static readonly string[] VIETCOM_HEADER = { "Date", "ID", "Amount", "Balance", "Ref" };
+        public string[] GetValueArray()
+        {
+            List<string> list = new List<string>();
+            list.Add(Date.ToString("yyyy/MM/dd"));
+            list.Add(Message);
+            list.Add(Delta + "");
+            list.Add(Total + "");
+            list.Add(Reference);
+            return list.ToArray();
+        }
+
+        public int CompareTo([AllowNull] VietcomInfo other)
+        {
+            int t = Date.CompareTo(other.Date);
+            if (t == 0)
+            {
+                t = Message.CompareTo(other.Message);
+            }
+            return t;
+        }
+
+        public bool Equals([AllowNull] VietcomInfo other)
+        {
+            return Date.Equals(other.Date) && Message.Equals(other.Message);
+        }
     }
 }

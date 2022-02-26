@@ -35,29 +35,17 @@ namespace SmsParser2.UI_Parser.View
 
         private void BtnBrowseXMLFile_Click(object sender, RoutedEventArgs e)
         {
-            log.Info("Click Browse XML");
-            if (context != null)
-            {
-                context.BtnBrowseXmlFileClick();
-            }
+            context.BtnBrowseXmlFileClick();
         }
 
         private void BtnBrowseOutputFolder_Click(object sender, RoutedEventArgs e)
         {
-            log.Info("Click Browse Output Folder");
-            if (context != null)
-            {
-                context.BtnBrowseOutputFolderClick();
-            }
+            context.BtnBrowseOutputFolderClick();
         }
 
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
-            log.Info("Click Export");
-            if (context != null)
-            {
-                context.BtnExportClick();
-            }
+            context.BtnExportClick();
         }
 
         private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -83,10 +71,23 @@ namespace SmsParser2.UI_Parser.View
 
         private void BtnLoadLatest_Click(object sender, RoutedEventArgs e)
         {
-            if (context != null)
-            {
-                context.BtnLoadLatestFile();
-            }
+            context.BtnLoadLatestFile();
+        }
+
+        private void BtnBrowseVietcomFolder_Click(object sender, RoutedEventArgs e)
+        {
+
+            context.BtnBrowseVietcomFolderClick();
+        }
+
+        private void BtnBrowseNewVietcomFolder_Click(object sender, RoutedEventArgs e)
+        {
+            context.BtnBrowseNewVietcomFolderClick();
+        }
+
+        private void BtnExportVietcom_Click(object sender, RoutedEventArgs e)
+        {
+            context.BtnExportVietcomClick();
         }
     }
 }

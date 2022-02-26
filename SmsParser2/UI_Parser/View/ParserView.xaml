@@ -13,66 +13,72 @@
         <vm:ParserVm/>
     </UserControl.DataContext>
     <UserControl.Resources>
-        <sys:Double x:Key="ButtonWidth">70</sys:Double>
-        <GridLength x:Key="GridButtonWidth">70</GridLength>
+        <sys:Double x:Key="LabelWidth">90</sys:Double>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical">
-        <Grid Margin="5" IsEnabled="{Binding IsButtonEnabled}">
-            <Grid.Resources>
-                <sys:Int32 x:Key="RowXMLFile">0</sys:Int32>
-                <sys:Int32 x:Key="RowOutputFile">1</sys:Int32>
-                <sys:Int32 x:Key="RowColumnWidth">2</sys:Int32>
-                <sys:Int32 x:Key="RowFilePrefix">3</sys:Int32>
-                <sys:Int32 x:Key="ColDescription">0</sys:Int32>
-                <sys:Int32 x:Key="ColTextbox">1</sys:Int32>
-                <sys:Int32 x:Key="ColButton">2</sys:Int32>
-                <Style TargetType="{x:Type Button}">
-                    <Setter Property="Margin" Value="2"/>
-                    <Setter Property="Width" Value="70"/>
-                    <Setter Property="HorizontalAlignment" Value="Left"/>
-                </Style>
-                <Style TargetType="{x:Type TextBox}">
-                    <Setter Property="Margin" Value="2"/>
-                </Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Margin" Value="2"/>
-                </Style>
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="180"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowXMLFile}" Text="XML File" />
-            <StackPanel Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowXMLFile}">
-                <TextBox Name="TextXmlFile" Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock x:Name="TxtXMLFileName" Text="{Binding TxtXMLFileName}"/>
+        <StackPanel.Resources>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Width" Value="70"/>
+                <Setter Property="Height" Value="25"/>
+                <Setter Property="Margin" Value="2,1"/>
+            </Style>
+            <Style TargetType="{x:Type TextBox}">
+                <Setter Property="Width" Value="300"/>
+                <Setter Property="Margin" Value="1"/>
+            </Style>
+            <Style TargetType="{x:Type Label}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+        </StackPanel.Resources>
+        <GroupBox Header="Output">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <Label Width="{StaticResource LabelWidth}" Content="Output Folder" />
+                    <TextBox Name="TextOutputFile" Text="{Binding TxtOutputFolder}"/>
+                    <Button Name="BtnBrowseOutputFolder" Content="Browse" Click="BtnBrowseOutputFolder_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <Label Content="Column Width" Width="{StaticResource LabelWidth}"/>
+                    <TextBox Name="TextColumnWidth" Text="{Binding TxtExcelColumnWidth}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <Label Content="Prefix" Width="{StaticResource LabelWidth}"/>
+                    <TextBox Name="TextPrefix" Text="{Binding TxtFilenamePrefix}"/>
+                </StackPanel>
             </StackPanel>
+        </GroupBox>
 
-            <StackPanel Grid.Column="{StaticResource ColButton}" Grid.Row="{StaticResource RowXMLFile}" Orientation="Horizontal">
-                <Button Name="BtnBrowseXMLFile" Click="BtnBrowseXMLFile_Click" Content="Browse"/>
-                <Button x:Name="BtnLoadLatest" Click="BtnLoadLatest_Click" Content="Load Latest"/>
+        <GroupBox Header="SMS">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                    <Label Width="{StaticResource LabelWidth}" Content="XML File" />
+                    <TextBox Name="TextXmlFile" Height="60" Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Name="BtnBrowseXMLFile" Click="BtnBrowseXMLFile_Click" Content="Browse"/>
+                        <Button x:Name="BtnLoadLatest" Click="BtnLoadLatest_Click" Content="Load Latest"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Width="{StaticResource LabelWidth}" Content="XML Name" />
+                    <Label Name="TxtXMLFileName" Content="{Binding TxtXMLFileName}"/>
+                </StackPanel>
+                <Button Name="BtnExport" Content="Export" Click="BtnExport_Click" HorizontalAlignment="Left" IsEnabled="{Binding IsButtonEnabled}"/>
             </StackPanel>
-
-            <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowOutputFile}" Text="Output Folder" />
-            <TextBox Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowOutputFile}" Name="TextOutputFile" Text="{Binding TxtOutputFolder}"/>
-            <Button Grid.Column="{StaticResource ColButton}" Grid.Row="{StaticResource RowOutputFile}" Name="BtnBrowseOutputFolder" Content="Browse" Click="BtnBrowseOutputFolder_Click"/>
-
-            <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowColumnWidth}" Text="Column Width" />
-            <TextBox Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowColumnWidth}" Name="TextColumnWidth" Text="{Binding TxtExcelColumnWidth}"/>
-
-            <TextBlock Grid.Column="{StaticResource ColDescription}" Grid.Row="{StaticResource RowFilePrefix}" Text="Prefix" />
-            <TextBox Grid.Column="{StaticResource ColTextbox}" Grid.Row="{StaticResource RowFilePrefix}" Name="TextPrefix" Text="{Binding TxtFilenamePrefix}"/>
-        </Grid>
-
-        <Button Name="BtnExport" Content="Export" Margin="5" Click="BtnExport_Click" Width="{StaticResource ButtonWidth}" HorizontalAlignment="Left" IsEnabled="{Binding IsButtonEnabled}"/>
-
+        </GroupBox>
+        <GroupBox Header="Vietcombank Excel">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Folder All" Width="{StaticResource LabelWidth}"/>
+                    <TextBox Name="TxtVietcomFolder" Text="{Binding TxtVietcomFolder}"/>
+                    <Button Name="BtnBrowseVietcomFolder" Content="Browse" Click="BtnBrowseVietcomFolder_Click"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Folder New" Width="{StaticResource LabelWidth}"/>
+                    <TextBox Name="TxtNewVietcomFolder" Text="{Binding TxtNewVietcomFolder}"/>
+                    <Button Name="BtnBrowseNewVietcomFolder" Content="Browse" Click="BtnBrowseNewVietcomFolder_Click"/>
+                </StackPanel>
+                <Button Name="BtnExportVietcom" Width="100" Content="Export Vietcom" Click="BtnExportVietcom_Click"  HorizontalAlignment="Left" IsEnabled="{Binding IsButtonEnabled}"/>
+            </StackPanel>
+        </GroupBox>
     </StackPanel>
 </UserControl>
