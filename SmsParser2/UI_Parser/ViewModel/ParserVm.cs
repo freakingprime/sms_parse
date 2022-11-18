@@ -352,7 +352,7 @@ namespace SmsParser2.UI_Parser.ViewModel
                     writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + ".xlsx");
                     log.Info("Finish process data");
                 });
-                await t;               
+                await t;
                 _ = MessageBox.Show("Exported to " + outputFolder, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 IsButtonEnabled = true;
             }
@@ -473,6 +473,44 @@ namespace SmsParser2.UI_Parser.ViewModel
                         break;
                     }
                 }
+                else if (arr[startRow, 2] != null)
+                {
+                    if (arr[startRow, 2].ToString().ToLower().Contains("stt"))
+                    {
+                        for (int i = 1; i <= numCol; ++i)
+                        {
+                            if (arr[startRow, i] != null)
+                            {
+                                var text = arr[startRow, i].ToString().Trim().ToLower();
+                                if (text.Contains("stt") || text.Contains("no."))
+                                {
+                                    colSTT = i;
+                                }
+                                else if (text.Contains("doc no") || text.Contains("date"))
+                                {
+                                    colDate = i;
+                                }
+                                else if (text.Contains("debit"))
+                                {
+                                    colSoGhiNo = i;
+                                }
+                                else if (text.Contains("credit"))
+                                {
+                                    colSoGhiCo = i;
+                                }
+                                else if (text.Contains("transactions") || text.Contains("detail"))
+                                {
+                                    colNoiDung = i;
+                                }
+                                else if (text.Contains("balance"))
+                                {
+                                    colSoDu = i;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
             }
 
             if (colSTT < 1 || colDate < 1 || colSoGhiNo < 1 || colSoGhiCo < 1 || colNoiDung < 1 || colSoDu < 1)
@@ -482,7 +520,7 @@ namespace SmsParser2.UI_Parser.ViewModel
 
             for (endRow = startRow + 1; endRow <= numRow; ++endRow)
             {
-                if (arr[endRow, 1] == null || arr[startRow, 1].ToString().Trim().Length == 0)
+                if ((arr[endRow, 1] == null || arr[startRow, 1].ToString().Trim().Length == 0) && (arr[endRow, 2] == null || arr[startRow, 2].ToString().Trim().Length == 0))
                 {
                     break;
                 }
