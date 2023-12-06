@@ -121,14 +121,17 @@ namespace SmsParser2.UI_Parser.ViewModel
             {
                 lastFile = Path.GetDirectoryName(lastFile);
             }
-            string[] files = Directory.GetFiles(lastFile);
-            Array.Sort(files);
-            for (int i = files.Length - 1; i >= 0; --i)
+            if (Directory.Exists(lastFile))
             {
-                if (files[i].Contains("sms"))
+                string[] files = Directory.GetFiles(lastFile);
+                Array.Sort(files);
+                for (int i = files.Length - 1; i >= 0; --i)
                 {
-                    TxtXMLFilePath = files[i];
-                    break;
+                    if (files[i].Contains("sms"))
+                    {
+                        TxtXMLFilePath = files[i];
+                        break;
+                    }
                 }
             }
         }
