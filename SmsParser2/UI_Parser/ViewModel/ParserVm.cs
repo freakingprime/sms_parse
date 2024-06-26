@@ -268,7 +268,7 @@ namespace SmsParser2.UI_Parser.ViewModel
                         foreach (var f in files)
                         {
                             string name = Path.GetFileName(f);
-                            if (!name.Contains("~") && name.ToLower().Contains("vietcombank") && name.ToLower().Contains(".xls"))
+                            if (!name.Contains("~") && (name.Contains("vietcombank", StringComparison.OrdinalIgnoreCase) || name.Contains("lich-su-giao-dich", StringComparison.OrdinalIgnoreCase)) && name.Contains(".xls", StringComparison.OrdinalIgnoreCase))
                             {
                                 list.AddRange(ReadExcelFileVietcom(f));
                             }
