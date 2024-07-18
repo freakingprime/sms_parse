@@ -302,7 +302,7 @@ namespace SmsParser2.UI_Parser.ViewModel
                     //print output to excel and text file
                     log.Info("Process data to folder: " + outputFolder);
                     ExcelWriter writer = new ExcelWriter(VietcomInfo.VIETCOM_HEADER);
-                    writer.ExportVietcomInfo(list2, outputFolder + "\\" + TxtFilenamePrefix + "_Vietcom" + ".xlsx");
+                    writer.ExportVietcomInfo(list2, outputFolder + "\\" + TxtFilenamePrefix + "_Vietcom_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     log.Info("Finish process data");
                 });
                 await t;
@@ -352,7 +352,7 @@ namespace SmsParser2.UI_Parser.ViewModel
                     writer.TestFunction();
 
                     //2021.06.08: Disable date suffix
-                    writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + ".xlsx");
+                    writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     log.Info("Finish process data");
                 });
                 await t;
