@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SmsParser2.UI_Parser.Model
+namespace SmsParser2.UI_Parser
 {
     public enum StatusBankInfo
     {

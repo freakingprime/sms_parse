@@ -1,5 +1,4 @@
-﻿using SmsParser2.UI_Parser.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace SmsParser2.UI_Parser.Model
+namespace SmsParser2.UI_Parser
 {
     public class SmsInfo
     {
@@ -19,15 +18,15 @@ namespace SmsParser2.UI_Parser.Model
             //nothing
         }
 
-        public string Address = String.Empty;
+        public string Address = string.Empty;
         public long DateAsNumber;
         public int Type;
-        public string Subject = String.Empty;
-        public string Body = String.Empty;
-        public string DateSent = String.Empty;
-        public string ReadableDate = String.Empty;
+        public string Subject = string.Empty;
+        public string Body = string.Empty;
+        public string DateSent = string.Empty;
+        public string ReadableDate = string.Empty;
         public DateTime Date = new DateTime();
-        public string ContactName = String.Empty;
+        public string ContactName = string.Empty;
         public CultureInfo enUS = new CultureInfo("en-US");
         public BankInfoBase MyBankInfo = null;
 

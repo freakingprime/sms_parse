@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SmsParser2.UI_Parser.Model
+namespace SmsParser2.UI_Parser
 {
     public class ShinhanInfo : BankInfoBase
     {
@@ -83,7 +83,7 @@ namespace SmsParser2.UI_Parser.Model
         private readonly Regex regexChange2 = new Regex(@"giao dich bi huy.+?(?<date>\d\d-\d\d-\d\d\d\d)\/(?<time>\d\d:\d\d)\/(?<amount>[\d,]+)\/(?<ref>.+),han muc.+?(?<hanmuc>[\d,]+)", RegexOptions.IgnoreCase);
         private readonly Regex regexChange3 = new Regex(@"tk.+thay doi\s+(?<sign>[+-])\s+VND\s+(?<amount>[\d,]+).+?so du kha dung.+?(?<sodu>[\d,]+)[;.\s]+(?<ref>.+)", RegexOptions.IgnoreCase);
 
-        private readonly string[] ignoredKeywords = { "otp", "du no the cuoi ky", "thanh toan the cua", "napas", "bit.ly", "ma xac thuc", "1900 1577", "19001577"};
+        private readonly string[] ignoredKeywords = { "otp", "du no the cuoi ky", "thanh toan the cua", "napas", "bit.ly", "ma xac thuc", "1900 1577", "19001577" };
 
         public const string SENDER_NAME = "shinhan";
     }

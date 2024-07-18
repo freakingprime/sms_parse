@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SmsParser2.UI_Parser.Model
+namespace SmsParser2.UI_Parser
 {
     public class HsbcInfo : BankInfoBase
     {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using Microsoft.Win32;
 using Simple1.MVVMBase;
-using SmsParser2.UI_Parser.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SmsParser2.UI_Parser.ViewModel
+namespace SmsParser2.UI_Parser
 {
     public class ParserVm : ViewModelBase
     {

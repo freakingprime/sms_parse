@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace SmsParser2.UI_Parser.Model
+namespace SmsParser2.UI_Parser
 {
     public class VpbankInfo : BankInfoBase
     {

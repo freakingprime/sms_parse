@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Range = Microsoft.Office.Interop.Excel.Range;
 
-namespace SmsParser2.UI_Parser.Model
+namespace SmsParser2.UI_Parser
 {
     public class ExcelWriter
     {
@@ -16,7 +16,7 @@ namespace SmsParser2.UI_Parser.Model
 
         public ExcelWriter(string[] arrHeader)
         {
-            this.header = arrHeader;
+            header = arrHeader;
             colHash = new Dictionary<string, int>(header.Length + 5);
             for (int i = 0; i < header.Length; ++i)
             {
@@ -29,7 +29,7 @@ namespace SmsParser2.UI_Parser.Model
         private string[] header;
         private Dictionary<string, int> colHash;
 
-        private void dumpArrayToSheet(Worksheet sheet, object[,] data)
+        private void DumpArrayToSheet(Worksheet sheet, object[,] data)
         {
             int numRows = data.GetLength(0);
             int numCols = data.GetLength(1);
@@ -62,7 +62,7 @@ namespace SmsParser2.UI_Parser.Model
             log.Debug("Writing: " + filePath);
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            Microsoft.Office.Interop.Excel.Application excel = new Microsoft.Office.Interop.Excel.Application();
+            Application excel = new Application();
             if (excel == null)
             {
                 log.Error("Excel is not properly installed");
@@ -95,14 +95,14 @@ namespace SmsParser2.UI_Parser.Model
                 ++rowIndex;
             }
 
-            dumpArrayToSheet(sheet, data);
+            DumpArrayToSheet(sheet, data);
 
             // Format file
 
             sheet.Application.ActiveWindow.SplitRow = 1;
             sheet.Application.ActiveWindow.FreezePanes = true;
 
-            sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignTop;
+            sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
 
             Range firstRow = (Range)sheet.Rows[1];
             firstRow.AutoFilter(1);
@@ -145,14 +145,14 @@ namespace SmsParser2.UI_Parser.Model
                 }
             }
 
-            dumpArrayToSheet(sheet2, data2);
+            DumpArrayToSheet(sheet2, data2);
 
             //format bank sheet
             sheet2.Activate();
             sheet2.Application.ActiveWindow.SplitRow = 1;
             sheet2.Application.ActiveWindow.FreezePanes = true;
 
-            sheet2.Range[getColumnRangeText(1, numCols)].VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignTop;
+            sheet2.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
 
             Range firstRowBank = (Range)sheet2.Rows[1];
             firstRowBank.AutoFilter(1);
@@ -183,7 +183,7 @@ namespace SmsParser2.UI_Parser.Model
             stopwatch.Stop();
         }
 
-        public static Microsoft.Office.Interop.Excel.Application GlobalExcel;
+        public static Application GlobalExcel;
 
         public void ExportVietcomInfo(List<VietcomInfo> listVietcomInfo, string filePath)
         {
@@ -192,7 +192,7 @@ namespace SmsParser2.UI_Parser.Model
             stopwatch.Start();
             if (GlobalExcel == null)
             {
-                GlobalExcel = new Microsoft.Office.Interop.Excel.Application();
+                GlobalExcel = new Application();
                 if (GlobalExcel == null)
                 {
                     log.Error("Excel is not properly installed");
@@ -226,13 +226,13 @@ namespace SmsParser2.UI_Parser.Model
                 ++rowIndex;
             }
 
-            dumpArrayToSheet(sheet, data);
+            DumpArrayToSheet(sheet, data);
 
             // Format file
 
             sheet.Application.ActiveWindow.SplitRow = 1;
             sheet.Application.ActiveWindow.FreezePanes = true;
-            sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignTop;
+            sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
 
             //first row with filter and bold text
             Range firstRow = (Range)sheet.Rows[1];
@@ -273,7 +273,7 @@ namespace SmsParser2.UI_Parser.Model
         {
             char begin = (char)((x + 64) % 255);
             char end = (char)((y + 64) % 255);
-            return (begin + ":" + end);
+            return begin + ":" + end;
         }
 
         private string getColumnRangeText(int x)

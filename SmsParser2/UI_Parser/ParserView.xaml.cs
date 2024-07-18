@@ -1,5 +1,4 @@
-﻿using SmsParser2.UI_Parser.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -13,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SmsParser2.UI_Parser.View
+namespace SmsParser2.UI_Parser
 {
     /// <summary>
     /// Interaction logic for ParserView.xaml

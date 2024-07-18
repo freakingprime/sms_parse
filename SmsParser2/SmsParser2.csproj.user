@@ -9,7 +9,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="UI_Parser\View\ParserView.xaml.cs">
+    <Compile Update="UI_Parser\ParserView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -17,7 +17,7 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="UI_Parser\View\ParserView.xaml">
+    <Page Update="UI_Parser\ParserView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

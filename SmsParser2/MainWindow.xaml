@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmsParser2"
-        xmlns:parser="clr-namespace:SmsParser2.UI_Parser.View"
+        xmlns:parser="clr-namespace:SmsParser2.UI_Parser"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <TabControl>
