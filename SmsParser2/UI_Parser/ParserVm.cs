@@ -1,4 +1,6 @@
-﻿using log4net.Core;
+﻿using Dapper;
+using log4net.Core;
+using Microsoft.Data.Sqlite;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Win32;
 using Simple1.MVVMBase;
@@ -37,12 +39,7 @@ namespace SmsParser2.UI_Parser
 
         #region Normal properties
 
-        private const string FILE_PATH = @"D:\DOWNLOAD\sms-20200824033231.xml";
-        private List<SmsInfo> listSms = new List<SmsInfo>();
-
         #endregion
-
-        #region Button command
 
         public async void BtnExportVietcomClick()
         {
@@ -123,9 +120,6 @@ namespace SmsParser2.UI_Parser
                 IsButtonEnabled = false;
                 var t = Task.Run(() =>
                 {
-                    ReadSMSFile(inputFilePath);
-                    //logBankInfo();
-
                     log.Info("Process data to folder: " + outputFolder);
                     ExcelWriter writer = new ExcelWriter(SmsInfo.EXCEL_HEADER);
                     log.Info("Created new excel writer");
@@ -134,7 +128,7 @@ namespace SmsParser2.UI_Parser
                     writer.TestFunction();
 
                     //2021.06.08: Disable date suffix
-                    writer.ExportSmsInfo(listSms, outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                    writer.ExportSmsInfo(ReadSMSFile(inputFilePath), outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     log.Info("Finish process data");
                 });
                 await t;
@@ -143,21 +137,28 @@ namespace SmsParser2.UI_Parser
             }
         }
 
-        #endregion
+        private void ImportSmsToDatabase()
+        {
+            using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
+            {
+                //connection.Execute(@"INSERT OR IGNORE INTO phone (code,name,color,url,createdDate) VALUES (@code,@name,@color,@url,@createdDate)", new { code = item.Code, name = item.Name, color = item.Color, url = item.Url, createdDate = item.DatePrice });
+            }
+        }
 
-        private void ReadSMSFile(string filePath)
+        private List<SmsInfo> ReadSMSFile(string filePath)
         {
             log.Debug("Read data from file: " + filePath);
+            List<SmsInfo> ret = new List<SmsInfo>();
             string str = File.ReadAllText(filePath);
             Regex regexXml = new Regex(@"<sms.+\/>");
             MatchCollection matchSmsTag = regexXml.Matches(str);
-            listSms.Clear();
             foreach (Match match in matchSmsTag)
             {
                 SmsInfo info = new SmsInfo(match.Value);
-                listSms.Add(info);
+                ret.Add(info);
             }
-            listSms.Sort((x, y) => y.DateAsNumber.CompareTo(x.DateAsNumber));
+            ret.Sort((x, y) => y.DateAsNumber.CompareTo(x.DateAsNumber));
+            return ret;
         }
 
         private List<VietcomInfo> ReadExcelFileVietcom(string filePath)
@@ -350,7 +351,7 @@ namespace SmsParser2.UI_Parser
             return listVietcom;
         }
 
-        private void LogBankInfo()
+        private void LogBankInfo(List<SmsInfo> listSms)
         {
             var list = listSms.Select(i => i.MyBankInfo).Where(i => i != null && i.ParseStatus != StatusBankInfo.Ignored);
             foreach (BankInfoBase item in list)
@@ -361,25 +362,26 @@ namespace SmsParser2.UI_Parser
 
         public static string GetDatabasePath()
         {
+            string ret = "";
             FileInfo templateFile = new FileInfo("finance.db");
             string targetFilePath = MySetting.Default.DatabasePath;
             string targetFolder = Path.GetDirectoryName(targetFilePath);
-            if (templateFile.Exists && Directory.Exists(targetFolder))
+            if (templateFile.Exists && targetFolder.Length > 0 && Directory.Exists(targetFolder))
             {
                 if (!File.Exists(targetFilePath))
                 {
                     try
                     {
                         File.Copy(templateFile.FullName, targetFilePath);
+                        ret = targetFilePath;
                     }
                     catch (Exception e1)
                     {
-                        log.Error("Cannot create database file at: " + targetFilePath);
-                        targetFilePath = "";
+                        log.Error("Cannot create database file at: " + targetFilePath, e1);
                     }
                 }
             }
-            return targetFilePath;
+            return ret;
         }
     }
 }
