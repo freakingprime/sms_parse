@@ -5,7 +5,7 @@
     <Setting Name="LastOpenedFile" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="LastOutputFolder" Type="System.String" Scope="User">
+    <Setting Name="OutputFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="BodyColumnWidth" Type="System.Int32" Scope="User">
@@ -14,10 +14,13 @@
     <Setting Name="FileNamePrefix" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="LastVietcomFolder" Type="System.String" Scope="User">
+    <Setting Name="VietcomFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="LastNewVietcomFolder" Type="System.String" Scope="User">
+    <Setting Name="NewVietcomFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DatabasePath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

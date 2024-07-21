@@ -13,11 +13,6 @@ namespace SmsParser2.UI_Parser
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
-        public SmsInfo()
-        {
-            //nothing
-        }
-
         public string Address = string.Empty;
         public long DateAsNumber;
         public int Type;
@@ -30,31 +25,33 @@ namespace SmsParser2.UI_Parser
         public CultureInfo enUS = new CultureInfo("en-US");
         public BankInfoBase MyBankInfo = null;
 
-        private string getValue(string key, string text)
+        private string GetValue(string key, string text)
         {
-            Regex regex = new Regex(key + "=\\\"(.+?)\\\"");
+            Regex regex = new Regex(key + @"=\""(.+?)\""");
             Match match = regex.Match(text);
-            if (match.Success && match.Groups[1].Value.Length > 8100) log.Error("Data too long");
-            if (match.Success) return match.Groups[1].Value;
-            else return "null";
+            if (match.Success && match.Groups[1].Value.Length > 8100)
+            {
+                log.Error("Data too long");
+            }
+            return match.Success ? match.Groups[1].Value : "null";
         }
 
         public SmsInfo(string xmlText)
         {
             //log.Debug("Create new object from text: " + xmlText);
-            Address = getValue("address", xmlText).ToLower();
+            Address = GetValue("address", xmlText).ToLower();
             if (Address.StartsWith("+84")) Address = Address.Replace("+84", "0");
-            DateAsNumber = long.Parse(getValue("date", xmlText));
-            Type = int.Parse(getValue("type", xmlText));
-            Subject = getValue("subject", xmlText);
-            Body = getValue("body", xmlText).Trim();
-            DateSent = getValue("date_sent", xmlText);
-            ReadableDate = getValue("readable_date", xmlText);
+            DateAsNumber = long.Parse(GetValue("date", xmlText));
+            Type = int.Parse(GetValue("type", xmlText));
+            Subject = GetValue("subject", xmlText);
+            Body = GetValue("body", xmlText).Trim();
+            DateSent = GetValue("date_sent", xmlText);
+            ReadableDate = GetValue("readable_date", xmlText);
             if (!DateTime.TryParseExact(ReadableDate, "yyyy/MM/dd HH:mm:ss", enUS, DateTimeStyles.None, out Date))
             {
                 log.Error("Cannot parse to DateTime: " + ReadableDate);
             }
-            ContactName = getValue("contact_name", xmlText);
+            ContactName = GetValue("contact_name", xmlText);
             if (Address.Equals(VietcomInfo.SENDER_NAME))
             {
                 MyBankInfo = new VietcomInfo(Body);
@@ -78,7 +75,7 @@ namespace SmsParser2.UI_Parser
         }
 
         public static readonly string[] EXCEL_HEADER = { "Address", "Date", "Name", "Type", "Body" };
-        public static readonly string[] BANK_HEADER = { "Address", "Date", "Amount", "SD", "Time", "Ref" };
+        public static readonly string[] BANK_HEADER = { "Address", "Date", "Amount", "Balance", "Time", "Ref" };
 
         public string[] GetValueArray()
         {

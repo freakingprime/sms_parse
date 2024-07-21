@@ -12,7 +12,7 @@ namespace SmsParser2 {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class MySetting : global::System.Configuration.ApplicationSettingsBase {
         
         private static MySetting defaultInstance = ((MySetting)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new MySetting())));
@@ -38,12 +38,12 @@ namespace SmsParser2 {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastOutputFolder {
+        public string OutputFolder {
             get {
-                return ((string)(this["LastOutputFolder"]));
+                return ((string)(this["OutputFolder"]));
             }
             set {
-                this["LastOutputFolder"] = value;
+                this["OutputFolder"] = value;
             }
         }
         
@@ -74,24 +74,36 @@ namespace SmsParser2 {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastVietcomFolder {
+        public string VietcomFolder {
             get {
-                return ((string)(this["LastVietcomFolder"]));
+                return ((string)(this["VietcomFolder"]));
             }
             set {
-                this["LastVietcomFolder"] = value;
+                this["VietcomFolder"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastNewVietcomFolder {
+        public string NewVietcomFolder {
             get {
-                return ((string)(this["LastNewVietcomFolder"]));
+                return ((string)(this["NewVietcomFolder"]));
             }
             set {
-                this["LastNewVietcomFolder"] = value;
+                this["NewVietcomFolder"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DatabasePath {
+            get {
+                return ((string)(this["DatabasePath"]));
+            }
+            set {
+                this["DatabasePath"] = value;
             }
         }
     }

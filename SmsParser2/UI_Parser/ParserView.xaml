@@ -1,15 +1,16 @@
 ﻿<UserControl x:Class="SmsParser2.UI_Parser.ParserView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:SmsParser2.UI_Parser"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              DataContextChanged="UserControl_DataContextChanged"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450"
+             d:DesignWidth="800">
     <UserControl.DataContext>
-        <local:ParserVm/>
+        <local:ParserVm />
     </UserControl.DataContext>
     <UserControl.Resources>
         <sys:Double x:Key="LabelWidth">90</sys:Double>
@@ -17,66 +18,122 @@
     <StackPanel Orientation="Vertical">
         <StackPanel.Resources>
             <Style TargetType="{x:Type Button}">
-                <Setter Property="Width" Value="70"/>
-                <Setter Property="Height" Value="25"/>
-                <Setter Property="Margin" Value="2,1"/>
+                <Setter Property="Width"
+                        Value="70" />
+                <Setter Property="Height"
+                        Value="25" />
+                <Setter Property="Margin"
+                        Value="2,1" />
             </Style>
             <Style TargetType="{x:Type TextBox}">
-                <Setter Property="Width" Value="300"/>
-                <Setter Property="Margin" Value="1"/>
+                <Setter Property="Width"
+                        Value="300" />
+                <Setter Property="Margin"
+                        Value="1" />
             </Style>
             <Style TargetType="{x:Type Label}">
-                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment"
+                        Value="Center" />
             </Style>
         </StackPanel.Resources>
         <GroupBox Header="Output">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Width="{StaticResource LabelWidth}" Content="Output Folder" />
-                    <TextBox Name="TextOutputFile" Text="{Binding TxtOutputFolder}"/>
-                    <Button Name="BtnBrowseOutputFolder" Content="Browse" Click="BtnBrowseOutputFolder_Click"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+                    <Label Width="{StaticResource LabelWidth}"
+                           Content="Database" />
+                    <TextBox Name="TxtDatabasePath"
+                             TextChanged="TxtDatabasePath_TextChanged" />
+                    <Button Name="BtnBrowseDatabase"
+                            Content="Browse"
+                            Click="BtnBrowseDatabase_Click" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Content="Column Width" Width="{StaticResource LabelWidth}"/>
-                    <TextBox Name="TextColumnWidth" Text="{Binding TxtExcelColumnWidth}"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+                    <Label Width="{StaticResource LabelWidth}"
+                           Content="Output Folder" />
+                    <TextBox Name="TxtOutputFile"
+                             TextChanged="TxtOutputFile_TextChanged" />
+                    <Button Name="BtnBrowseOutputFolder"
+                            Content="Browse"
+                            Click="BtnBrowseOutputFolder_Click" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Content="Prefix" Width="{StaticResource LabelWidth}"/>
-                    <TextBox Name="TextPrefix" Text="{Binding TxtFilenamePrefix}"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+                    <Label Content="Column Width"
+                           Width="{StaticResource LabelWidth}" />
+                    <TextBox Name="TxtColumnWidth"
+                             TextChanged="TxtColumnWidth_TextChanged" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+                    <Label Content="Prefix"
+                           Width="{StaticResource LabelWidth}" />
+                    <TextBox Name="TxtPrefix"
+                             TextChanged="TxtPrefix_TextChanged"
+                             Text="{Binding TxtFilenamePrefix}" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>
 
         <GroupBox Header="SMS">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal" Margin="2">
-                    <Label Width="{StaticResource LabelWidth}" Content="XML File" />
-                    <TextBox Name="TextXmlFile" Height="60" Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+                    <Label Width="{StaticResource LabelWidth}"
+                           Content="XML File" />
+                    <TextBox Name="TextXmlFile"
+                             Height="60"
+                             Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" />
                     <StackPanel Orientation="Horizontal">
-                        <Button Name="BtnBrowseXMLFile" Click="BtnBrowseXMLFile_Click" Content="Browse"/>
-                        <Button x:Name="BtnLoadLatest" Click="BtnLoadLatest_Click" Content="Load Latest"/>
+                        <Button Name="BtnBrowseXMLFile"
+                                Click="BtnBrowseXMLFile_Click"
+                                Content="Browse" />
+                        <Button x:Name="BtnLoadLatest"
+                                Click="BtnLoadLatest_Click"
+                                Content="Load Latest" />
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Width="{StaticResource LabelWidth}" Content="XML Name" />
-                    <Label Name="TxtXMLFileName" Content="{Binding TxtXMLFileName}"/>
+                    <Label Width="{StaticResource LabelWidth}"
+                           Content="XML Name" />
+                    <Label Name="TxtXMLFileName"
+                           Content="{Binding TxtXMLFileName}" />
                 </StackPanel>
-                <Button Name="BtnExport" Content="Export" Click="BtnExport_Click" HorizontalAlignment="Left" IsEnabled="{Binding IsButtonEnabled}"/>
+                <Button Name="BtnExport"
+                        Content="Export"
+                        Click="BtnExport_Click"
+                        HorizontalAlignment="Left"
+                        IsEnabled="{Binding IsButtonEnabled}" />
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Vietcombank Excel">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Folder All" Width="{StaticResource LabelWidth}"/>
-                    <TextBox Name="TxtVietcomFolder" Text="{Binding TxtVietcomFolder}"/>
-                    <Button Name="BtnBrowseVietcomFolder" Content="Browse" Click="BtnBrowseVietcomFolder_Click"/>
+                    <Label Content="Folder All"
+                           Width="{StaticResource LabelWidth}" />
+                    <TextBox Name="TxtVietcomFolder"
+                             Text="{Binding TxtVietcomFolder}" />
+                    <Button Name="BtnBrowseVietcomFolder"
+                            Content="Browse"
+                            Click="BtnBrowseVietcomFolder_Click" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Folder New" Width="{StaticResource LabelWidth}"/>
-                    <TextBox Name="TxtNewVietcomFolder" Text="{Binding TxtNewVietcomFolder}"/>
-                    <Button Name="BtnBrowseNewVietcomFolder" Content="Browse" Click="BtnBrowseNewVietcomFolder_Click"/>
+                    <Label Content="Folder New"
+                           Width="{StaticResource LabelWidth}" />
+                    <TextBox Name="TxtNewVietcomFolder"
+                             TextChanged="TxtNewVietcomFolder_TextChanged"
+                             Text="{Binding TxtNewVietcomFolder}" />
+                    <Button Name="BtnBrowseNewVietcomFolder"
+                            Content="Browse"
+                            Click="BtnBrowseNewVietcomFolder_Click" />
                 </StackPanel>
-                <Button Name="BtnExportVietcom" Width="100" Content="Export Vietcom" Click="BtnExportVietcom_Click"  HorizontalAlignment="Left" IsEnabled="{Binding IsButtonEnabled}"/>
+                <Button Name="BtnExportVietcom"
+                        Width="100"
+                        Content="Export Vietcom"
+                        Click="BtnExportVietcom_Click"
+                        HorizontalAlignment="Left"
+                        IsEnabled="{Binding IsButtonEnabled}" />
             </StackPanel>
         </GroupBox>
     </StackPanel>

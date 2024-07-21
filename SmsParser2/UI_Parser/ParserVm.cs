@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using log4net.Core;
+using Microsoft.Office.Interop.Excel;
 using Microsoft.Win32;
 using Simple1.MVVMBase;
 using System;
@@ -53,38 +54,6 @@ namespace SmsParser2.UI_Parser
         {
             get { return _txtVietcomFolder; }
             set { SetValue(ref _txtVietcomFolder, value); }
-        }
-
-        private string _txtNewVietcomFolder;
-
-        public string TxtNewVietcomFolder
-        {
-            get { return _txtNewVietcomFolder; }
-            set { SetValue(ref _txtNewVietcomFolder, value); }
-        }
-
-        private string _txtOutputFolder;
-
-        public string TxtOutputFolder
-        {
-            get { return _txtOutputFolder; }
-            set { SetValue(ref _txtOutputFolder, value); }
-        }
-
-        private string _txtExcelColumnWidth;
-
-        public string TxtExcelColumnWidth
-        {
-            get { return _txtExcelColumnWidth; }
-            set { SetValue(ref _txtExcelColumnWidth, value); }
-        }
-
-        private string _txtFilenamePrefix;
-
-        public string TxtFilenamePrefix
-        {
-            get { return _txtFilenamePrefix; }
-            set { SetValue(ref _txtFilenamePrefix, value); }
         }
 
         private bool _isButtonEnabled;
@@ -162,32 +131,10 @@ namespace SmsParser2.UI_Parser
             }
         }
 
-        public void BtnBrowseOutputFolderClick()
-        {
-            log.Info("Clicked button browse Output folder");
-            string folder = MySetting.Default.LastOutputFolder;
-            while (!Directory.Exists(folder) && folder.LastIndexOf(Path.DirectorySeparatorChar) > 0)
-            {
-                folder = folder.Substring(0, folder.LastIndexOf(Path.DirectorySeparatorChar));
-            }
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
-            {
-                Description = "Select where to save output file",
-                SelectedPath = folder,
-                UseDescriptionForTitle = true
-            };
-            if (dialog.ShowDialog().GetValueOrDefault())
-            {
-                TxtOutputFolder = dialog.SelectedPath;
-                MySetting.Default.LastOutputFolder = dialog.SelectedPath;
-                MySetting.Default.Save();
-            }
-        }
-
         public void BtnBrowseVietcomFolderClick()
         {
             log.Info("Clicked button browse Output folder");
-            string folder = MySetting.Default.LastVietcomFolder;
+            string folder = MySetting.Default.VietcomFolder;
             while (!Directory.Exists(folder) && folder.LastIndexOf(Path.DirectorySeparatorChar) > 0)
             {
                 folder = folder.Substring(0, folder.LastIndexOf(Path.DirectorySeparatorChar));
@@ -201,7 +148,7 @@ namespace SmsParser2.UI_Parser
             if (dialog.ShowDialog().GetValueOrDefault())
             {
                 TxtVietcomFolder = dialog.SelectedPath;
-                MySetting.Default.LastVietcomFolder = dialog.SelectedPath;
+                MySetting.Default.VietcomFolder = dialog.SelectedPath;
                 MySetting.Default.Save();
             }
         }
@@ -209,7 +156,7 @@ namespace SmsParser2.UI_Parser
         public void BtnBrowseNewVietcomFolderClick()
         {
             log.Info("Clicked button browse new vietcom folder");
-            string folder = MySetting.Default.LastNewVietcomFolder;
+            string folder = MySetting.Default.NewVietcomFolder;
             while (!Directory.Exists(folder) && folder.LastIndexOf(Path.DirectorySeparatorChar) > 0)
             {
                 folder = folder.Substring(0, folder.LastIndexOf(Path.DirectorySeparatorChar));
@@ -222,8 +169,7 @@ namespace SmsParser2.UI_Parser
             };
             if (dialog.ShowDialog().GetValueOrDefault())
             {
-                TxtNewVietcomFolder = dialog.SelectedPath;
-                MySetting.Default.LastNewVietcomFolder = dialog.SelectedPath;
+                MySetting.Default.NewVietcomFolder = dialog.SelectedPath;
                 MySetting.Default.Save();
             }
         }
@@ -231,29 +177,20 @@ namespace SmsParser2.UI_Parser
         public async void BtnExportVietcomClick()
         {
             log.Info("Clicked button export to Excel file");
-            TxtOutputFolder = TxtOutputFolder.Trim();
-            TxtFilenamePrefix = TxtFilenamePrefix.Trim();
             TxtVietcomFolder = TxtVietcomFolder.Trim();
-            TxtNewVietcomFolder = TxtNewVietcomFolder.Trim();
 
-            string outputFolder = TxtOutputFolder;
+            string outputFolder = MySetting.Default.OutputFolder;
             while (outputFolder.EndsWith("\\"))
             {
                 outputFolder = outputFolder.Remove(outputFolder.Length - 1);
             }
 
-            if (!int.TryParse(TxtExcelColumnWidth.Trim(), out int width) || width < 5)
+            int width = Math.Max(MySetting.Default.BodyColumnWidth, 60);
+            if (Directory.Exists(outputFolder) && MySetting.Default.FileNamePrefix.Length > 0)
             {
-                width = 60;
-            }
-
-            if (Directory.Exists(outputFolder) && TxtFilenamePrefix.Length > 0)
-            {
-                MySetting.Default.LastOutputFolder = outputFolder;
-                MySetting.Default.FileNamePrefix = TxtFilenamePrefix;
+                MySetting.Default.OutputFolder = outputFolder;
                 MySetting.Default.BodyColumnWidth = width;
-                MySetting.Default.LastVietcomFolder = TxtVietcomFolder;
-                MySetting.Default.LastNewVietcomFolder = TxtNewVietcomFolder;
+                MySetting.Default.VietcomFolder = TxtVietcomFolder;
                 MySetting.Default.Save();
 
                 IsButtonEnabled = false;
@@ -273,9 +210,9 @@ namespace SmsParser2.UI_Parser
                             }
                         }
                     }
-                    if (Directory.Exists(TxtNewVietcomFolder))
+                    if (Directory.Exists(MySetting.Default.NewVietcomFolder))
                     {
-                        string[] files = Directory.GetFiles(TxtNewVietcomFolder);
+                        string[] files = Directory.GetFiles(MySetting.Default.NewVietcomFolder);
                         foreach (var f in files)
                         {
                             string name = Path.GetFileName(f);
@@ -301,7 +238,7 @@ namespace SmsParser2.UI_Parser
                     //print output to excel and text file
                     log.Info("Process data to folder: " + outputFolder);
                     ExcelWriter writer = new ExcelWriter(VietcomInfo.VIETCOM_HEADER);
-                    writer.ExportVietcomInfo(list2, outputFolder + "\\" + TxtFilenamePrefix + "_Vietcom_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                    writer.ExportVietcomInfo(list2, outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_Vietcom_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     log.Info("Finish process data");
                 });
                 await t;
@@ -314,27 +251,19 @@ namespace SmsParser2.UI_Parser
         {
             log.Info("Clicked button export to Excel file");
             TxtXMLFilePath = TxtXMLFilePath.Trim();
-            TxtOutputFolder = TxtOutputFolder.Trim();
-            TxtFilenamePrefix = TxtFilenamePrefix.Trim();
 
             string inputFilePath = TxtXMLFilePath;
-            string outputFolder = TxtOutputFolder;
+            string outputFolder = MySetting.Default.OutputFolder;
             while (outputFolder.EndsWith("\\"))
             {
                 outputFolder = outputFolder.Remove(outputFolder.Length - 1);
             }
 
-            if (!int.TryParse(TxtExcelColumnWidth.Trim(), out int width) || width < 5)
-            {
-                width = 60;
-            }
+            int width = Math.Max(MySetting.Default.BodyColumnWidth, 60);
 
-            if (File.Exists(inputFilePath) && Directory.Exists(outputFolder) && TxtFilenamePrefix.Length > 0)
+            if (File.Exists(inputFilePath) && Directory.Exists(outputFolder) && MySetting.Default.FileNamePrefix.Length > 0)
             {
                 MySetting.Default.LastOpenedFile = inputFilePath;
-                MySetting.Default.LastOutputFolder = outputFolder;
-                MySetting.Default.FileNamePrefix = TxtFilenamePrefix;
-                MySetting.Default.BodyColumnWidth = width;
                 MySetting.Default.Save();
 
                 IsButtonEnabled = false;
@@ -351,7 +280,7 @@ namespace SmsParser2.UI_Parser
                     writer.TestFunction();
 
                     //2021.06.08: Disable date suffix
-                    writer.ExportSmsInfo(listSms, outputFolder + "\\" + TxtFilenamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                    writer.ExportSmsInfo(listSms, outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     log.Info("Finish process data");
                 });
                 await t;
@@ -369,21 +298,10 @@ namespace SmsParser2.UI_Parser
             {
                 TxtXMLFilePath = MySetting.Default.LastOpenedFile;
             }
-            if (Directory.Exists(MySetting.Default.LastOutputFolder))
+            if (Directory.Exists(MySetting.Default.VietcomFolder))
             {
-                TxtOutputFolder = MySetting.Default.LastOutputFolder;
+                TxtVietcomFolder = MySetting.Default.VietcomFolder;
             }
-            if (Directory.Exists(MySetting.Default.LastVietcomFolder))
-            {
-                TxtVietcomFolder = MySetting.Default.LastVietcomFolder;
-            }
-            if (Directory.Exists(MySetting.Default.LastNewVietcomFolder))
-            {
-                TxtNewVietcomFolder = MySetting.Default.LastNewVietcomFolder;
-            }
-            TxtExcelColumnWidth = MySetting.Default.BodyColumnWidth.ToString();
-            TxtFilenamePrefix = MySetting.Default.FileNamePrefix;
-            log.Info(string.Format("XML {0} | Output {1} | Column width {2} | Prefix {3}", TxtXMLFilePath, TxtOutputFolder, TxtExcelColumnWidth, TxtFilenamePrefix));
             log.Info("Load setting successfully");
         }
 
@@ -601,5 +519,27 @@ namespace SmsParser2.UI_Parser
             }
         }
 
+        public static string GetDatabasePath()
+        {
+            FileInfo templateFile = new FileInfo("finance.db");
+            string targetFilePath = MySetting.Default.DatabasePath;
+            string targetFolder = Path.GetDirectoryName(targetFilePath);
+            if (templateFile.Exists && Directory.Exists(targetFolder))
+            {
+                if (!File.Exists(targetFilePath))
+                {
+                    try
+                    {
+                        File.Copy(templateFile.FullName, targetFilePath);
+                    }
+                    catch (Exception e1)
+                    {
+                        log.Error("Cannot create database file at: " + targetFilePath);
+                        targetFilePath = "";
+                    }
+                }
+            }
+            return targetFilePath;
+        }
     }
 }
