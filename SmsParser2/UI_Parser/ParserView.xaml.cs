@@ -37,14 +37,10 @@ namespace SmsParser2.UI_Parser
             {
                 TxtNewVietcomFolder.Text = MySetting.Default.NewVietcomFolder;
             }
-            //if (File.Exists(MySetting.Default.LastOpenedFile))
-            //{
-            //    TxtXMLFilePath = MySetting.Default.LastOpenedFile;
-            //}
-            //if (Directory.Exists(MySetting.Default.VietcomFolder))
-            //{
-            //    TxtVietcomFolder = MySetting.Default.VietcomFolder;
-            //}
+            if (File.Exists(MySetting.Default.XMLFilePath))
+            {
+                TxtXmlFile.Text = MySetting.Default.XMLFilePath;
+            }
             TxtColumnWidth.Text = MySetting.Default.BodyColumnWidth.ToString();
             TxtPrefix.Text = MySetting.Default.FileNamePrefix;
         }
@@ -57,7 +53,28 @@ namespace SmsParser2.UI_Parser
 
         private void BtnBrowseXMLFile_Click(object sender, RoutedEventArgs e)
         {
-            context.BtnBrowseXmlFileClick();
+            log.Info("Clicked button browse XML file");
+            string lastFile = MySetting.Default.XMLFilePath;
+            if (!File.Exists(lastFile))
+            {
+                while (!Directory.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
+                {
+                    lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
+                }
+            }
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Filter = "SMS files|*.txt;*.xml",
+                Title = "Select SMS file",
+                Multiselect = false,
+                InitialDirectory = lastFile
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                log.Debug("Selected file: " + dialog.FileName);
+                MySetting.Default.XMLFilePath = dialog.FileName;
+                MySetting.Default.Save();
+            }
         }
 
         private void BtnBrowseOutputFolder_Click(object sender, RoutedEventArgs e)
@@ -86,11 +103,10 @@ namespace SmsParser2.UI_Parser
         {
             if (e.NewValue != null)
             {
-                if (e.NewValue is ParserVm)
+                if (e.NewValue is ParserVm vm)
                 {
                     log.Info("Data context is set");
-                    context = (ParserVm)e.NewValue;
-                    context.LoadOldSettings();
+                    context = vm;
                 }
                 else
                 {
@@ -105,13 +121,32 @@ namespace SmsParser2.UI_Parser
 
         private void BtnLoadLatest_Click(object sender, RoutedEventArgs e)
         {
-            context.BtnLoadLatestFile();
-        }
-
-        private void BtnBrowseVietcomFolder_Click(object sender, RoutedEventArgs e)
-        {
-
-            context.BtnBrowseVietcomFolderClick();
+            string lastFile = MySetting.Default.XMLFilePath;
+            if (!File.Exists(lastFile))
+            {
+                while (!Directory.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
+                {
+                    lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
+                }
+            }
+            else
+            {
+                lastFile = Path.GetDirectoryName(lastFile);
+            }
+            if (Directory.Exists(lastFile))
+            {
+                string[] files = Directory.GetFiles(lastFile);
+                Array.Sort(files);
+                for (int i = files.Length - 1; i >= 0; --i)
+                {
+                    if (files[i].Contains("sms"))
+                    {
+                        MySetting.Default.XMLFilePath = files[i];
+                        MySetting.Default.Save();
+                        break;
+                    }
+                }
+            }
         }
 
         private void BtnBrowseNewVietcomFolder_Click(object sender, RoutedEventArgs e)
@@ -182,6 +217,13 @@ namespace SmsParser2.UI_Parser
         {
             MySetting.Default.NewVietcomFolder = ((TextBox)sender).Text;
             MySetting.Default.Save();
+        }
+
+        private void TextXmlFile_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            MySetting.Default.XMLFilePath = ((TextBox)sender).Text;
+            MySetting.Default.Save();
+            TxtXMLFileName.Content = Path.GetFileName(((TextBox)sender).Text);
         }
     }
 }

@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SmsParser2" GeneratedClassName="MySetting">
   <Profiles />
   <Settings>
-    <Setting Name="LastOpenedFile" Type="System.String" Scope="User">
+    <Setting Name="XMLFilePath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="OutputFolder" Type="System.String" Scope="User">

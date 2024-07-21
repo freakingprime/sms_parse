@@ -26,12 +26,12 @@ namespace SmsParser2 {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastOpenedFile {
+        public string XMLFilePath {
             get {
-                return ((string)(this["LastOpenedFile"]));
+                return ((string)(this["XMLFilePath"]));
             }
             set {
-                this["LastOpenedFile"] = value;
+                this["XMLFilePath"] = value;
             }
         }
         

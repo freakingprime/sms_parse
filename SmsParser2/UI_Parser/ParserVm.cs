@@ -25,37 +25,6 @@ namespace SmsParser2.UI_Parser
 
         #region Bind properties
 
-        private string _txtXMLFileName;
-
-        public string TxtXMLFileName
-        {
-            get { return _txtXMLFileName; }
-            set { SetValue(ref _txtXMLFileName, value); }
-        }
-
-
-        private string _txtXMLFilePath;
-
-        public string TxtXMLFilePath
-        {
-            get { return _txtXMLFilePath; }
-            set
-            {
-                SetValue(ref _txtXMLFilePath, value);
-                TxtXMLFileName = Path.GetFileName(value);
-                MySetting.Default.LastOpenedFile = value;
-                MySetting.Default.Save();
-            }
-        }
-
-        private string _txtVietcomFolder;
-
-        public string TxtVietcomFolder
-        {
-            get { return _txtVietcomFolder; }
-            set { SetValue(ref _txtVietcomFolder, value); }
-        }
-
         private bool _isButtonEnabled;
 
         public bool IsButtonEnabled
@@ -75,109 +44,9 @@ namespace SmsParser2.UI_Parser
 
         #region Button command
 
-        public void BtnLoadLatestFile()
-        {
-            string lastFile = MySetting.Default.LastOpenedFile;
-            if (!File.Exists(lastFile))
-            {
-                while (!Directory.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
-                {
-                    lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
-                }
-            }
-            else
-            {
-                lastFile = Path.GetDirectoryName(lastFile);
-            }
-            if (Directory.Exists(lastFile))
-            {
-                string[] files = Directory.GetFiles(lastFile);
-                Array.Sort(files);
-                for (int i = files.Length - 1; i >= 0; --i)
-                {
-                    if (files[i].Contains("sms"))
-                    {
-                        TxtXMLFilePath = files[i];
-                        break;
-                    }
-                }
-            }
-        }
-
-        public void BtnBrowseXmlFileClick()
-        {
-            log.Info("Clicked button browse XML file");
-            string lastFile = MySetting.Default.LastOpenedFile;
-            if (!File.Exists(lastFile))
-            {
-                while (!Directory.Exists(lastFile) && lastFile.LastIndexOf(Path.DirectorySeparatorChar) > 0)
-                {
-                    lastFile = lastFile.Substring(0, lastFile.LastIndexOf(Path.DirectorySeparatorChar));
-                }
-            }
-            OpenFileDialog dialog = new OpenFileDialog
-            {
-                Filter = "SMS files|*.txt;*.xml",
-                Title = "Select SMS file",
-                Multiselect = false,
-                InitialDirectory = lastFile
-            };
-            if (dialog.ShowDialog() == true)
-            {
-                log.Debug("Selected file: " + dialog.FileName);
-                TxtXMLFilePath = dialog.FileName;
-                MySetting.Default.LastOpenedFile = dialog.FileName;
-                MySetting.Default.Save();
-            }
-        }
-
-        public void BtnBrowseVietcomFolderClick()
-        {
-            log.Info("Clicked button browse Output folder");
-            string folder = MySetting.Default.VietcomFolder;
-            while (!Directory.Exists(folder) && folder.LastIndexOf(Path.DirectorySeparatorChar) > 0)
-            {
-                folder = folder.Substring(0, folder.LastIndexOf(Path.DirectorySeparatorChar));
-            }
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
-            {
-                Description = "Select where to save output file",
-                SelectedPath = folder,
-                UseDescriptionForTitle = true
-            };
-            if (dialog.ShowDialog().GetValueOrDefault())
-            {
-                TxtVietcomFolder = dialog.SelectedPath;
-                MySetting.Default.VietcomFolder = dialog.SelectedPath;
-                MySetting.Default.Save();
-            }
-        }
-
-        public void BtnBrowseNewVietcomFolderClick()
-        {
-            log.Info("Clicked button browse new vietcom folder");
-            string folder = MySetting.Default.NewVietcomFolder;
-            while (!Directory.Exists(folder) && folder.LastIndexOf(Path.DirectorySeparatorChar) > 0)
-            {
-                folder = folder.Substring(0, folder.LastIndexOf(Path.DirectorySeparatorChar));
-            }
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog
-            {
-                Description = "Select where to save output file",
-                SelectedPath = folder,
-                UseDescriptionForTitle = true
-            };
-            if (dialog.ShowDialog().GetValueOrDefault())
-            {
-                MySetting.Default.NewVietcomFolder = dialog.SelectedPath;
-                MySetting.Default.Save();
-            }
-        }
-
         public async void BtnExportVietcomClick()
         {
             log.Info("Clicked button export to Excel file");
-            TxtVietcomFolder = TxtVietcomFolder.Trim();
 
             string outputFolder = MySetting.Default.OutputFolder;
             while (outputFolder.EndsWith("\\"))
@@ -190,7 +59,6 @@ namespace SmsParser2.UI_Parser
             {
                 MySetting.Default.OutputFolder = outputFolder;
                 MySetting.Default.BodyColumnWidth = width;
-                MySetting.Default.VietcomFolder = TxtVietcomFolder;
                 MySetting.Default.Save();
 
                 IsButtonEnabled = false;
@@ -198,25 +66,13 @@ namespace SmsParser2.UI_Parser
                 {
                     //read vietcombank data
                     List<VietcomInfo> list = new List<VietcomInfo>();
-                    if (Directory.Exists(TxtVietcomFolder))
-                    {
-                        string[] files = Directory.GetFiles(TxtVietcomFolder);
-                        foreach (var f in files)
-                        {
-                            string name = Path.GetFileName(f);
-                            if (!name.Contains("~") && (name.Contains("vietcombank", StringComparison.OrdinalIgnoreCase) || name.Contains("lich-su-giao-dich", StringComparison.OrdinalIgnoreCase)) && name.Contains(".xls", StringComparison.OrdinalIgnoreCase))
-                            {
-                                list.AddRange(ReadExcelFileVietcom(f));
-                            }
-                        }
-                    }
                     if (Directory.Exists(MySetting.Default.NewVietcomFolder))
                     {
                         string[] files = Directory.GetFiles(MySetting.Default.NewVietcomFolder);
                         foreach (var f in files)
                         {
                             string name = Path.GetFileName(f);
-                            if (!name.Contains("~") && name.ToLower().Contains("vietcombank") && name.ToLower().Contains(".xls"))
+                            if (!name.Contains("~") && (name.Contains("vietcombank", StringComparison.OrdinalIgnoreCase) || name.Contains("lich-su-giao-dich", StringComparison.OrdinalIgnoreCase)) && name.Contains(".xls", StringComparison.OrdinalIgnoreCase))
                             {
                                 list.AddRange(ReadExcelFileVietcom(f));
                             }
@@ -250,9 +106,7 @@ namespace SmsParser2.UI_Parser
         public async void BtnExportClick()
         {
             log.Info("Clicked button export to Excel file");
-            TxtXMLFilePath = TxtXMLFilePath.Trim();
-
-            string inputFilePath = TxtXMLFilePath;
+            string inputFilePath = MySetting.Default.XMLFilePath;
             string outputFolder = MySetting.Default.OutputFolder;
             while (outputFolder.EndsWith("\\"))
             {
@@ -263,7 +117,7 @@ namespace SmsParser2.UI_Parser
 
             if (File.Exists(inputFilePath) && Directory.Exists(outputFolder) && MySetting.Default.FileNamePrefix.Length > 0)
             {
-                MySetting.Default.LastOpenedFile = inputFilePath;
+                MySetting.Default.XMLFilePath = inputFilePath;
                 MySetting.Default.Save();
 
                 IsButtonEnabled = false;
@@ -290,20 +144,6 @@ namespace SmsParser2.UI_Parser
         }
 
         #endregion
-
-        public void LoadOldSettings()
-        {
-            log.Info("Load old settings");
-            if (File.Exists(MySetting.Default.LastOpenedFile))
-            {
-                TxtXMLFilePath = MySetting.Default.LastOpenedFile;
-            }
-            if (Directory.Exists(MySetting.Default.VietcomFolder))
-            {
-                TxtVietcomFolder = MySetting.Default.VietcomFolder;
-            }
-            log.Info("Load setting successfully");
-        }
 
         private void ReadSMSFile(string filePath)
         {

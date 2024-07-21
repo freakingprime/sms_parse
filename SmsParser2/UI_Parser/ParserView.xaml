@@ -82,9 +82,9 @@
                             Margin="2">
                     <Label Width="{StaticResource LabelWidth}"
                            Content="XML File" />
-                    <TextBox Name="TextXmlFile"
+                    <TextBox Name="TxtXmlFile"
                              Height="60"
-                             Text="{Binding TxtXMLFilePath,UpdateSourceTrigger=PropertyChanged}" />
+                             TextChanged="TextXmlFile_TextChanged" />
                     <StackPanel Orientation="Horizontal">
                         <Button Name="BtnBrowseXMLFile"
                                 Click="BtnBrowseXMLFile_Click"
@@ -110,16 +110,7 @@
         <GroupBox Header="Vietcombank Excel">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="Folder All"
-                           Width="{StaticResource LabelWidth}" />
-                    <TextBox Name="TxtVietcomFolder"
-                             Text="{Binding TxtVietcomFolder}" />
-                    <Button Name="BtnBrowseVietcomFolder"
-                            Content="Browse"
-                            Click="BtnBrowseVietcomFolder_Click" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="Folder New"
+                    <Label Content="Folder"
                            Width="{StaticResource LabelWidth}" />
                     <TextBox Name="TxtNewVietcomFolder"
                              TextChanged="TxtNewVietcomFolder_TextChanged"
