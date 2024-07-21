@@ -36,6 +36,11 @@ namespace SmsParser2.UI_Parser
             return match.Success ? match.Groups[1].Value : "null";
         }
 
+        public SmsInfo()
+        {
+            //do nothing
+        }
+
         public SmsInfo(string xmlText)
         {
             //log.Debug("Create new object from text: " + xmlText);

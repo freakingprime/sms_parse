@@ -7,6 +7,7 @@ using Simple1.MVVMBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -114,22 +115,26 @@ namespace SmsParser2.UI_Parser
 
             if (File.Exists(inputFilePath) && Directory.Exists(outputFolder) && MySetting.Default.FileNamePrefix.Length > 0)
             {
-                MySetting.Default.XMLFilePath = inputFilePath;
-                MySetting.Default.Save();
-
                 IsButtonEnabled = false;
                 var t = Task.Run(() =>
                 {
-                    log.Info("Process data to folder: " + outputFolder);
-                    ExcelWriter writer = new ExcelWriter(SmsInfo.EXCEL_HEADER);
-                    log.Info("Created new excel writer");
+                    var list = ReadSMSFile(inputFilePath);
+                    //LogBankInfo(list);
 
-                    //if you need to do something to test the writer
-                    writer.TestFunction();
+                    ImportSmsToDatabase(list);
+                    var test = LoadSmsFromDatabase();
+                    log.Info("Number of loaded SMS: " + test.Count);
 
-                    //2021.06.08: Disable date suffix
-                    writer.ExportSmsInfo(ReadSMSFile(inputFilePath), outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
-                    log.Info("Finish process data");
+                    //log.Info("Process data to folder: " + outputFolder);
+                    //ExcelWriter writer = new ExcelWriter(SmsInfo.EXCEL_HEADER);
+                    //log.Info("Created new excel writer");
+
+                    ////if you need to do something to test the writer
+                    //writer.TestFunction();
+
+                    ////2021.06.08: Disable date suffix
+                    //writer.ExportSmsInfo(ReadSMSFile(inputFilePath), outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                    //log.Info("Finish process data");
                 });
                 await t;
                 _ = MessageBox.Show("Exported to " + outputFolder, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -137,12 +142,38 @@ namespace SmsParser2.UI_Parser
             }
         }
 
-        private void ImportSmsToDatabase()
+        private void ImportSmsToDatabase(List<SmsInfo> listSms)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
             {
-                //connection.Execute(@"INSERT OR IGNORE INTO phone (code,name,color,url,createdDate) VALUES (@code,@name,@color,@url,@createdDate)", new { code = item.Code, name = item.Name, color = item.Color, url = item.Url, createdDate = item.DatePrice });
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                foreach (var item in listSms)
+                {
+                    connection.Execute(@"INSERT OR IGNORE INTO sms (Address,Body,Date) VALUES (@Address,@Body,@Date)", new { item.Address, item.Body, item.Date });
+                }
+                transaction.Commit();
             }
+            sw.Stop();
+            log.Info("Insert to database in: " + sw.ElapsedMilliseconds + " ms");
+        }
+
+        private List<SmsInfo> LoadSmsFromDatabase()
+        {
+            List<SmsInfo> ret = new List<SmsInfo>();
+            Stopwatch sw = Stopwatch.StartNew();
+            using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
+            {
+                var list = connection.Query<SmsInfo>(@"SELECT * from sms");
+                foreach (var item in list)
+                {
+                    ret.Add(item);
+                }
+            }
+            sw.Stop();
+            log.Info("Load SMS from database in: " + sw.ElapsedMilliseconds + " ms");
+            return ret;
         }
 
         private List<SmsInfo> ReadSMSFile(string filePath)
@@ -368,17 +399,17 @@ namespace SmsParser2.UI_Parser
             string targetFolder = Path.GetDirectoryName(targetFilePath);
             if (templateFile.Exists && targetFolder.Length > 0 && Directory.Exists(targetFolder))
             {
-                if (!File.Exists(targetFilePath))
+                try
                 {
-                    try
-                    {
-                        File.Copy(templateFile.FullName, targetFilePath);
-                        ret = targetFilePath;
-                    }
-                    catch (Exception e1)
-                    {
-                        log.Error("Cannot create database file at: " + targetFilePath, e1);
-                    }
+                    File.Copy(templateFile.FullName, targetFilePath, false);
+                }
+                catch (Exception e1)
+                {
+                    log.Error("Cannot create database file at: " + targetFilePath, e1);
+                }
+                if (File.Exists(targetFilePath))
+                {
+                    ret = targetFilePath;
                 }
             }
             return ret;

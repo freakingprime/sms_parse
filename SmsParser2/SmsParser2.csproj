@@ -47,6 +47,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="finance.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="log4net_config.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

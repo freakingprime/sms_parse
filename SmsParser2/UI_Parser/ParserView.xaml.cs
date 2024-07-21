@@ -72,8 +72,7 @@ namespace SmsParser2.UI_Parser
             if (dialog.ShowDialog() == true)
             {
                 log.Debug("Selected file: " + dialog.FileName);
-                MySetting.Default.XMLFilePath = dialog.FileName;
-                MySetting.Default.Save();
+                TxtXmlFile.Text = dialog.FileName;
             }
         }
 
