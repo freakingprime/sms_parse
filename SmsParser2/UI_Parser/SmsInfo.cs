@@ -14,13 +14,10 @@ namespace SmsParser2.UI_Parser
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public string Address = string.Empty;
-        public long DateAsNumber;
         public int Type;
         public string Subject = string.Empty;
         public string Body = string.Empty;
-        public string DateSent = string.Empty;
-        public string ReadableDate = string.Empty;
-        public DateTime Date = new DateTime();
+        public DateTime Date = DateTime.MinValue;
         public string ContactName = string.Empty;
         public CultureInfo enUS = new CultureInfo("en-US");
         public BankInfoBase MyBankInfo = null;
@@ -46,16 +43,13 @@ namespace SmsParser2.UI_Parser
             //log.Debug("Create new object from text: " + xmlText);
             Address = GetValue("address", xmlText).ToLower();
             if (Address.StartsWith("+84")) Address = Address.Replace("+84", "0");
-            DateAsNumber = long.Parse(GetValue("date", xmlText));
+            if (long.TryParse(GetValue("date", xmlText), out long unix))
+            {
+                Date = DateTimeOffset.FromUnixTimeMilliseconds(unix).LocalDateTime;
+            }
             Type = int.Parse(GetValue("type", xmlText));
             Subject = GetValue("subject", xmlText);
             Body = GetValue("body", xmlText).Trim();
-            DateSent = GetValue("date_sent", xmlText);
-            ReadableDate = GetValue("readable_date", xmlText);
-            if (!DateTime.TryParseExact(ReadableDate, "yyyy/MM/dd HH:mm:ss", enUS, DateTimeStyles.None, out Date))
-            {
-                log.Error("Cannot parse to DateTime: " + ReadableDate);
-            }
             ContactName = GetValue("contact_name", xmlText);
             if (Address.Equals(VietcomInfo.SENDER_NAME))
             {
@@ -86,7 +80,7 @@ namespace SmsParser2.UI_Parser
         {
             List<string> list = new List<string>();
             list.Add(Address);
-            list.Add(ReadableDate);
+            list.Add(Date.ToString("yyyy-MM-dd HH:mm:ss"));
             list.Add(ContactName);
             if (Type == 1)
             {
@@ -104,7 +98,7 @@ namespace SmsParser2.UI_Parser
         {
             List<string> list = new List<string>();
             list.Add(Address);
-            list.Add(ReadableDate);
+            list.Add(Date.ToString("yyyy-MM-dd HH:mm:ss"));
             list.Add(MyBankInfo.Delta + "");
             list.Add(MyBankInfo.Total + "");
             list.Add("T " + MyBankInfo.TimeString);

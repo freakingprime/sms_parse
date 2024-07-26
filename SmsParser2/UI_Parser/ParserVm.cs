@@ -240,7 +240,7 @@ namespace SmsParser2.UI_Parser
                 SmsInfo info = new SmsInfo(match.Value);
                 ret.Add(info);
             }
-            ret.Sort((x, y) => y.DateAsNumber.CompareTo(x.DateAsNumber));
+            ret.Sort((x, y) => y.Date.CompareTo(x.Date));
             oldLog.Debug("SMS count: " + ret.Count);
             return ret;
         }
