@@ -26,6 +26,7 @@ namespace SmsParser2
     public partial class MainWindow : Window
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly LogController oldLog = LogController.Instance;
 
         public MainWindow()
         {
@@ -35,6 +36,7 @@ namespace SmsParser2
 #if DEBUG
             this.Title = this.Title + " debug";
 #endif
+            oldLog.SetTextBox(TxtLog);
         }
 
         private void BtnTest_Click(object sender, RoutedEventArgs e)

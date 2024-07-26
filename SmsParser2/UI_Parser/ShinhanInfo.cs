@@ -85,6 +85,6 @@ namespace SmsParser2.UI_Parser
 
         private readonly string[] ignoredKeywords = { "otp", "du no the cuoi ky", "thanh toan the cua", "napas", "bit.ly", "ma xac thuc", "1900 1577", "19001577" };
 
-        public const string SENDER_NAME = "shinhan";
+        public const string SENDER_NAME = "shinhanbank";
     }
 }

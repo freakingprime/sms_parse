@@ -18,12 +18,14 @@
     <StackPanel Orientation="Vertical">
         <StackPanel.Resources>
             <Style TargetType="{x:Type Button}">
-                <Setter Property="Width"
+                <Setter Property="MinWidth"
                         Value="70" />
                 <Setter Property="Height"
                         Value="25" />
                 <Setter Property="Margin"
-                        Value="2,1" />
+                        Value="1" />
+                <Setter Property="Padding"
+                        Value="2" />
             </Style>
             <Style TargetType="{x:Type TextBox}">
                 <Setter Property="Width"
@@ -83,7 +85,6 @@
                     <Label Width="{StaticResource LabelWidth}"
                            Content="XML File" />
                     <TextBox Name="TxtXmlFile"
-                             Height="60"
                              TextChanged="TextXmlFile_TextChanged" />
                     <StackPanel Orientation="Horizontal">
                         <Button Name="BtnBrowseXMLFile"
@@ -95,16 +96,16 @@
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Label Width="{StaticResource LabelWidth}"
-                           Content="XML Name" />
-                    <Label Name="TxtXMLFileName"
-                           Content="{Binding TxtXMLFileName}" />
+                    <Button x:Name="BtnImportSms"
+                            Content="Import SMS to DB"
+                            Click="BtnImportSms_Click"
+                            IsEnabled="{Binding IsButtonEnabled}" />
+                    <Button Name="BtnExport"
+                            Content="Export"
+                            Click="BtnExport_Click"
+                            HorizontalAlignment="Left"
+                            IsEnabled="{Binding IsButtonEnabled}" />                    
                 </StackPanel>
-                <Button Name="BtnExport"
-                        Content="Export"
-                        Click="BtnExport_Click"
-                        HorizontalAlignment="Left"
-                        IsEnabled="{Binding IsButtonEnabled}" />
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Vietcombank Excel">

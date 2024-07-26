@@ -6,10 +6,29 @@
         xmlns:local="clr-namespace:SmsParser2"
         xmlns:parser="clr-namespace:SmsParser2.UI_Parser"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <TabControl>
-        <TabItem Name="TabParser" Header="Parser">
-            <parser:ParserView/>
-        </TabItem>
-    </TabControl>
+        Title="MainWindow"
+        Height="600"
+        Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Name="TabParser"
+                     Header="Parser">
+                <parser:ParserView />
+            </TabItem>
+        </TabControl>
+        <GroupBox Header="Log"
+                  Grid.Row="1">
+            <DockPanel LastChildFill="True">
+                <TextBox DockPanel.Dock="Bottom"
+                         x:Name="TxtLog"
+                         VerticalScrollBarVisibility="Visible"
+                         TextWrapping="Wrap" />
+            </DockPanel>
+        </GroupBox>
+    </Grid>
+
 </Window>
