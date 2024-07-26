@@ -44,5 +44,10 @@ namespace SmsParser2
             string text = "Test log at: " + DateTime.Now.ToString();
             log.Debug(text);
         }
+
+        private void TxtLog_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TxtLog.ScrollToEnd();
+        }
     }
 }

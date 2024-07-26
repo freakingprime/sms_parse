@@ -14,12 +14,10 @@ namespace SmsParser2.UI_Parser
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public string Address = string.Empty;
-        public int Type;
-        public string Subject = string.Empty;
         public string Body = string.Empty;
         public DateTime Date = DateTime.MinValue;
+        public int Type;
         public string ContactName = string.Empty;
-        public CultureInfo enUS = new CultureInfo("en-US");
         public BankInfoBase MyBankInfo = null;
 
         private string GetValue(string key, string text)
@@ -48,29 +46,8 @@ namespace SmsParser2.UI_Parser
                 Date = DateTimeOffset.FromUnixTimeMilliseconds(unix).LocalDateTime;
             }
             Type = int.Parse(GetValue("type", xmlText));
-            Subject = GetValue("subject", xmlText);
             Body = GetValue("body", xmlText).Trim();
             ContactName = GetValue("contact_name", xmlText);
-            if (Address.Equals(VietcomInfo.SENDER_NAME))
-            {
-                MyBankInfo = new VietcomInfo(Body);
-            }
-            else if (Address.Contains(ShinhanInfo.SENDER_NAME))
-            {
-                MyBankInfo = new ShinhanInfo(Body);
-            }
-            else if (Address.Contains(HsbcInfo.SENDER_NAME))
-            {
-                MyBankInfo = new HsbcInfo(Body);
-            }
-            else if (Address.Contains(VpbankInfo.SENDER_NAME))
-            {
-                MyBankInfo = new VpbankInfo(Body);
-            }
-            if (MyBankInfo != null && MyBankInfo.ParseStatus == StatusBankInfo.Error)
-            {
-                log.Error("Cannot parse BankInfo from " + Address + ": " + Body);
-            }
         }
 
         public static readonly string[] EXCEL_HEADER = { "Address", "Date", "Name", "Type", "Body" };

@@ -9,8 +9,9 @@ namespace SmsParser2.UI_Parser
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
-        public ShinhanInfo(string text)
+        public ShinhanInfo(string text, DateTime date)
         {
+            this.Date = date;
             string lower = text.ToLower();
             foreach (string s in ignoredKeywords)
             {

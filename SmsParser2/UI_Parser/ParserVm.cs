@@ -154,7 +154,7 @@ namespace SmsParser2.UI_Parser
                 var transaction = connection.BeginTransaction();
                 foreach (var item in listSms)
                 {
-                    rowAffected += connection.Execute(@"INSERT OR IGNORE INTO sms (Address,Body,Date,Type) VALUES (@Address,@Body,@Date,@Type)", new { item.Address, item.Body, item.Date, item.Type });
+                    rowAffected += connection.Execute(@"INSERT OR IGNORE INTO sms (Address,Body,Date,Type,ContactName) VALUES (@Address,@Body,@Date,@Type,@ContactName)", new { item.Address, item.Body, item.Date, item.Type, item.ContactName });
                 }
                 transaction.Commit();
             }
@@ -179,6 +179,23 @@ namespace SmsParser2.UI_Parser
             return ret;
         }
 
+        private List<BankInfoBase> LoadBankFromDatabase()
+        {
+            List<BankInfoBase> ret = new List<BankInfoBase>();
+            Stopwatch sw = Stopwatch.StartNew();
+            using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
+            {
+                var list = connection.Query<BankInfoBase>(@"SELECT * from transaction");
+                foreach (var item in list)
+                {
+                    ret.Add(item);
+                }
+            }
+            sw.Stop();
+            oldLog.Debug("Loaded " + ret.Count + " bank info from database in: " + sw.ElapsedMilliseconds + " ms");
+            return ret;
+        }
+
         private List<BankInfoBase> ConvertSmsToBank(List<SmsInfo> listSmsInfo)
         {
             List<BankInfoBase> ret = new List<BankInfoBase>();
@@ -189,16 +206,16 @@ namespace SmsParser2.UI_Parser
                 switch (item.Address)
                 {
                     case VietcomInfo.SENDER_NAME:
-                        bank = new VietcomInfo(item.Body);
+                        bank = new VietcomInfo(item.Body, item.Date);
                         break;
                     case ShinhanInfo.SENDER_NAME:
-                        bank = new ShinhanInfo(item.Body);
+                        bank = new ShinhanInfo(item.Body, item.Date);
                         break;
                     case HsbcInfo.SENDER_NAME:
-                        bank = new HsbcInfo(item.Body);
+                        bank = new HsbcInfo(item.Body, item.Date);
                         break;
                     case VpbankInfo.SENDER_NAME:
-                        bank = new VpbankInfo(item.Body);
+                        bank = new VpbankInfo(item.Body, item.Date);
                         break;
                 }
                 if (bank != null)
@@ -226,6 +243,11 @@ namespace SmsParser2.UI_Parser
                 oldLog.Error("Error (" + (listError.Count - 1) + ") is exported to: " + output);
             }
             return ret;
+        }
+
+        private void WriteBankToDatabase(List<BankInfoBase> list)
+        {
+
         }
 
         private List<SmsInfo> ReadSMSFile(string filePath)
@@ -373,7 +395,7 @@ namespace SmsParser2.UI_Parser
 
             for (int i = startRow + 1; i < endRow; ++i)
             {
-                VietcomInfo info = new VietcomInfo("")
+                VietcomInfo info = new VietcomInfo("", DateTime.MinValue)
                 {
                     From = VietcomInfo.SENDER_NAME,
                     ParseStatus = StatusBankInfo.Okay,
@@ -435,15 +457,6 @@ namespace SmsParser2.UI_Parser
             return listVietcom;
         }
 
-        private void LogBankInfo(List<SmsInfo> listSms)
-        {
-            var list = listSms.Select(i => i.MyBankInfo).Where(i => i != null && i.ParseStatus != StatusBankInfo.Ignored);
-            foreach (BankInfoBase item in list)
-            {
-                log.Debug(item.ToString());
-            }
-        }
-
         public static string GetDatabasePath()
         {
             string ret = "";
@@ -481,7 +494,8 @@ namespace SmsParser2.UI_Parser
                     ImportSmsToDatabase(tempSms);
                     var list = LoadSmsFromDatabase();
                     var listBank = ConvertSmsToBank(list);
-
+                    var linkBankDb = LoadBankFromDatabase();
+                    log.Info("haha");
 
                 });
                 IsButtonEnabled = true;

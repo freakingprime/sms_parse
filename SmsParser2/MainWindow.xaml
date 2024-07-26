@@ -26,7 +26,9 @@
                 <TextBox DockPanel.Dock="Bottom"
                          x:Name="TxtLog"
                          VerticalScrollBarVisibility="Visible"
-                         TextWrapping="Wrap" />
+                         TextWrapping="Wrap"
+                         IsReadOnly="True"
+                         TextChanged="TxtLog_TextChanged" />
             </DockPanel>
         </GroupBox>
     </Grid>

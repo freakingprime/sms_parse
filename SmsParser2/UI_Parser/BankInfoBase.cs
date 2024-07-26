@@ -27,6 +27,7 @@ namespace SmsParser2.UI_Parser
         public string From = string.Empty;
         public StatusBankInfo ParseStatus = StatusBankInfo.Error;
         public string TimeString = "none";
+        public DateTime Date = DateTime.MinValue;
         public string Reference = string.Empty;
 
         public override string ToString()

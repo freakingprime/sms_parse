@@ -10,8 +10,9 @@ namespace SmsParser2.UI_Parser
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
-        public VietcomInfo(string text)
+        public VietcomInfo(string text, DateTime date)
         {
+            this.Date = date;
             string lower = text.ToLower();
             foreach (string s in ignoredKeywords)
             {
@@ -26,11 +27,15 @@ namespace SmsParser2.UI_Parser
             Match totalMatch = regexTotal.Match(lower);
 
             Match timeMatch = regexTime.Match(lower);
-            if (timeMatch.Success) TimeString = timeMatch.Groups[1].Value.Trim();
-
+            if (timeMatch.Success)
+            {
+                TimeString = timeMatch.Groups[1].Value.Trim();
+            }
             Match referMatch = regexRefer.Match(text);
-            if (referMatch.Success) Reference = referMatch.Groups[1].Value.Trim();
-
+            if (referMatch.Success)
+            {
+                Reference = referMatch.Groups[1].Value.Trim();
+            }
             if (changeMatch.Success && totalMatch.Success)
             {
                 if (long.TryParse(changeMatch.Groups[2].Value.Replace(",", ""), out Delta)
@@ -54,8 +59,6 @@ namespace SmsParser2.UI_Parser
         private readonly string[] ignoredKeywords = { "quy khach", "thu phi", "ma otp", "the vcb visa", "huy giao dich tren", "smartotp", "1900545413" };
 
         public const string SENDER_NAME = "vietcombank";
-
-        public DateTime Date = DateTime.MinValue;
 
         public static readonly string[] VIETCOM_HEADER = { "Date", "ID", "Amount", "Balance", "Ref" };
         public string[] GetValueArray()
