@@ -10,19 +10,18 @@ namespace SmsParser2.UI_Parser
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
-        public VietcomInfo(string text, DateTime date)
+        public VietcomInfo(SmsInfo sms)
         {
-            this.Date = date;
-            string lower = text.ToLower();
+            this.Date = sms.Date;
             foreach (string s in ignoredKeywords)
             {
-                if (lower.Contains(s))
+                if (sms.Body.Contains(s, StringComparison.OrdinalIgnoreCase))
                 {
                     ParseStatus = StatusBankInfo.Ignored;
                     return;
                 }
             }
-            Message = text;
+            string lower = sms.Body.ToLower();
             Match changeMatch = regexChange.Match(lower);
             Match totalMatch = regexTotal.Match(lower);
 
@@ -31,15 +30,15 @@ namespace SmsParser2.UI_Parser
             {
                 TimeString = timeMatch.Groups[1].Value.Trim();
             }
-            Match referMatch = regexRefer.Match(text);
+            Match referMatch = regexRefer.Match(sms.Body);
             if (referMatch.Success)
             {
-                Reference = referMatch.Groups[1].Value.Trim();
+                Ref = referMatch.Groups[1].Value.Trim();
             }
             if (changeMatch.Success && totalMatch.Success)
             {
                 if (long.TryParse(changeMatch.Groups[2].Value.Replace(",", ""), out Delta)
-                    && long.TryParse(totalMatch.Groups[2].Value.Replace(",", ""), out Total))
+                    && long.TryParse(totalMatch.Groups[2].Value.Replace(",", ""), out Balance))
                 {
                     ParseStatus = StatusBankInfo.Okay;
                 }
@@ -56,7 +55,7 @@ namespace SmsParser2.UI_Parser
         private readonly Regex regexTotal = new Regex(@"\.\s*(sd|so du)\s+([\d,]+)\s*vnd", RegexOptions.IgnoreCase);
         private readonly Regex regexRefer = new Regex(@"\.\s*ref\s*(.+)", RegexOptions.IgnoreCase);
 
-        private readonly string[] ignoredKeywords = { "quy khach", "thu phi", "ma otp", "the vcb visa", "huy giao dich tren", "smartotp", "1900545413" };
+        private readonly string[] ignoredKeywords = { "quy khach", "thu phi", "ma otp", "the vcb visa", "huy giao dich tren", "smartotp", "1900545413", "tinh nang an toan bao mat 3D secure" };
 
         public const string SENDER_NAME = "vietcombank";
 
@@ -65,10 +64,10 @@ namespace SmsParser2.UI_Parser
         {
             List<string> list = new List<string>();
             list.Add(Date.ToString("yyyy/MM/dd"));
-            list.Add(Message);
+            list.Add("");
             list.Add(Delta + "");
-            list.Add(Total + "");
-            list.Add(Reference);
+            list.Add(Balance + "");
+            list.Add(Ref);
             return list.ToArray();
         }
 
@@ -77,14 +76,14 @@ namespace SmsParser2.UI_Parser
             int t = Date.CompareTo(other.Date);
             if (t == 0)
             {
-                t = Message.CompareTo(other.Message);
+                //t = Message.CompareTo(other.Message);
             }
             return t;
         }
 
         public bool Equals([AllowNull] VietcomInfo other)
         {
-            return Date.Equals(other.Date) && Message.Equals(other.Message);
+            return Date.Equals(other.Date);
         }
     }
 }
