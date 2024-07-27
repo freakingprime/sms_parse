@@ -99,12 +99,7 @@
                     <Button x:Name="BtnImportSms"
                             Content="Import SMS to DB"
                             Click="BtnImportSms_Click"
-                            IsEnabled="{Binding IsButtonEnabled}" />
-                    <Button Name="BtnExport"
-                            Content="Export"
-                            Click="BtnExport_Click"
-                            HorizontalAlignment="Left"
-                            IsEnabled="{Binding IsButtonEnabled}" />                    
+                            IsEnabled="{Binding IsButtonEnabled}" />               
                 </StackPanel>
             </StackPanel>
         </GroupBox>

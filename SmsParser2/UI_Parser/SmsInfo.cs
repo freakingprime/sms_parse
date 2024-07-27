@@ -13,6 +13,7 @@ namespace SmsParser2.UI_Parser
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
+        public int ID;
         public string Address = string.Empty;
         public string Body = string.Empty;
         public DateTime Date = DateTime.MinValue;
@@ -77,11 +78,11 @@ namespace SmsParser2.UI_Parser
             list.Add(Address);
             list.Add(Date.ToString("yyyy-MM-dd HH:mm:ss"));
             list.Add(MyBankInfo.Delta + "");
-            list.Add(MyBankInfo.Total + "");
+            list.Add(MyBankInfo.Balance + "");
             list.Add("T " + MyBankInfo.TimeString);
-            if (MyBankInfo.Reference.Length > 0)
+            if (MyBankInfo.Ref.Length > 0)
             {
-                list.Add(MyBankInfo.Reference);
+                list.Add(MyBankInfo.Ref);
             }
             else
             {

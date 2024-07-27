@@ -7,14 +7,17 @@ using Simple1.MVVMBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Interop;
 
 namespace SmsParser2.UI_Parser
@@ -83,7 +86,7 @@ namespace SmsParser2.UI_Parser
                     HashSet<string> hashID = new HashSet<string>();
                     foreach (var item in list)
                     {
-                        string key = item.Message + item.TimeString;
+                        string key = item.TimeString;
                         if (hashID.Add(key))
                         {
                             list2.Add(item);
@@ -97,46 +100,6 @@ namespace SmsParser2.UI_Parser
                     ExcelWriter writer = new ExcelWriter(VietcomInfo.VIETCOM_HEADER);
                     writer.ExportVietcomInfo(list2, outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_Vietcom_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
                     log.Info("Finish process data");
-                });
-                await t;
-                _ = MessageBox.Show("Exported to " + outputFolder, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                IsButtonEnabled = true;
-            }
-        }
-
-        public async void BtnExportClick()
-        {
-            log.Info("Clicked button export to Excel file");
-            string inputFilePath = MySetting.Default.XMLFilePath;
-            string outputFolder = MySetting.Default.OutputFolder;
-            while (outputFolder.EndsWith("\\"))
-            {
-                outputFolder = outputFolder.Remove(outputFolder.Length - 1);
-            }
-            int width = Math.Max(MySetting.Default.BodyColumnWidth, 60);
-
-            if (File.Exists(inputFilePath) && Directory.Exists(outputFolder) && MySetting.Default.FileNamePrefix.Length > 0)
-            {
-                IsButtonEnabled = false;
-                var t = Task.Run(() =>
-                {
-                    var list = ReadSMSFile(inputFilePath);
-                    //LogBankInfo(list);
-
-                    ImportSmsToDatabase(list);
-                    var test = LoadSmsFromDatabase();
-                    log.Info("Number of loaded SMS: " + test.Count);
-
-                    //log.Info("Process data to folder: " + outputFolder);
-                    //ExcelWriter writer = new ExcelWriter(SmsInfo.EXCEL_HEADER);
-                    //log.Info("Created new excel writer");
-
-                    ////if you need to do something to test the writer
-                    //writer.TestFunction();
-
-                    ////2021.06.08: Disable date suffix
-                    //writer.ExportSmsInfo(ReadSMSFile(inputFilePath), outputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
-                    //log.Info("Finish process data");
                 });
                 await t;
                 _ = MessageBox.Show("Exported to " + outputFolder, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -185,10 +148,10 @@ namespace SmsParser2.UI_Parser
             Stopwatch sw = Stopwatch.StartNew();
             using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
             {
-                var list = connection.Query<BankInfoBase>(@"SELECT * from transaction");
+                var list = connection.Query<DbTransaction>(@"SELECT * from transaction");
                 foreach (var item in list)
                 {
-                    ret.Add(item);
+                    // ret.Add(item);
                 }
             }
             sw.Stop();
@@ -196,45 +159,83 @@ namespace SmsParser2.UI_Parser
             return ret;
         }
 
-        private List<BankInfoBase> ConvertSmsToBank(List<SmsInfo> listSmsInfo)
+        private HashSet<int> LoadParsedSmsIdFromDatabase()
         {
-            List<BankInfoBase> ret = new List<BankInfoBase>();
-            List<string> listError = new List<string>();
-            foreach (SmsInfo item in listSmsInfo)
+            HashSet<int> ret = new HashSet<int>();
+            Stopwatch sw = Stopwatch.StartNew();
+            using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
             {
-                BankInfoBase bank = null;
-                switch (item.Address)
+                try
                 {
-                    case VietcomInfo.SENDER_NAME:
-                        bank = new VietcomInfo(item.Body, item.Date);
-                        break;
-                    case ShinhanInfo.SENDER_NAME:
-                        bank = new ShinhanInfo(item.Body, item.Date);
-                        break;
-                    case HsbcInfo.SENDER_NAME:
-                        bank = new HsbcInfo(item.Body, item.Date);
-                        break;
-                    case VpbankInfo.SENDER_NAME:
-                        bank = new VpbankInfo(item.Body, item.Date);
-                        break;
-                }
-                if (bank != null)
-                {
-                    switch (bank.ParseStatus)
+                    var list = connection.Query<int>(@"SELECT SmsID from bank");
+                    foreach (var item in list)
                     {
-                        case StatusBankInfo.Error:
-                            listError.Add(item.Address + "\t" + item.Body);
-                            break;
-                        case StatusBankInfo.Ignored:
-                            break;
-                        case StatusBankInfo.Okay:
-                            ret.Add(bank);
-                            break;
+                        _ = ret.Add(item);
                     }
                 }
+                catch (Exception e1)
+                {
+                    oldLog.Error("Cannot get parsed SmsID from database", e1);
+                }
+
+            }
+            sw.Stop();
+            oldLog.Debug("Loaded " + ret.Count + " SmsID from database in: " + sw.ElapsedMilliseconds + " ms");
+            return ret;
+        }
+
+        private void ConvertSmsToBank(List<SmsInfo> listSmsInfo, HashSet<int> hashIgnored)
+        {
+            List<string> listError = new List<string>();
+            Stopwatch sw = Stopwatch.StartNew();
+            int rowAffected = 0;
+            using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                foreach (SmsInfo item in listSmsInfo)
+                {
+                    if (hashIgnored.Contains(item.ID))
+                    {
+                        // continue;
+                    }
+                    BankInfoBase bank = null;
+                    switch (item.Address)
+                    {
+                        case VietcomInfo.SENDER_NAME:
+                            bank = new VietcomInfo(item);
+                            break;
+                        case ShinhanInfo.SENDER_NAME:
+                            bank = new ShinhanInfo(item);
+                            break;
+                        case HsbcInfo.SENDER_NAME:
+                            bank = new HsbcInfo(item);
+                            break;
+                        case VpbankInfo.SENDER_NAME:
+                            bank = new VpbankInfo(item);
+                            break;
+                    }
+                    if (bank != null)
+                    {
+                        switch (bank.ParseStatus)
+                        {
+                            case StatusBankInfo.Error:
+                                listError.Add(item.Address + "\t" + item.Body);
+                                break;
+                            case StatusBankInfo.Ignored:
+                                break;
+                            case StatusBankInfo.Okay:
+                                //write to db
+                                rowAffected += connection.Execute(@"INSERT OR IGNORE INTO bank (BankName,Date,Delta,Balance,TimeString,SmsID,Ref) VALUES (@BankName,@Date,@Delta,@Balance,@TimeString,@SmsID,@Ref)", new { BankName = item.Address.ToUpper(), item.Date, bank.Delta, bank.Balance, bank.TimeString, SmsID = item.ID, bank.Ref });
+                                break;
+                        }
+                    }
+                }
+                transaction.Commit();
             }
             if (listError.Count > 0)
             {
+                listError.Sort();
                 listError.Insert(0, "Cannot parse:");
                 string output = @"D:\DOWNLOADED\cannotparse.txt";
 #if DEBUG
@@ -242,12 +243,26 @@ namespace SmsParser2.UI_Parser
 #endif
                 oldLog.Error("Error (" + (listError.Count - 1) + ") is exported to: " + output);
             }
-            return ret;
+            sw.Stop();
+            oldLog.Debug("Insert " + rowAffected + " rows to database in: " + sw.ElapsedMilliseconds + " ms");
         }
 
         private void WriteBankToDatabase(List<BankInfoBase> list)
         {
-
+            Stopwatch sw = Stopwatch.StartNew();
+            int rowAffected = 0;
+            using (var connection = new SqliteConnection("Data Source=\"" + GetDatabasePath() + "\""))
+            {
+                connection.Open();
+                var transaction = connection.BeginTransaction();
+                foreach (var item in list)
+                {
+                    //rowAffected += connection.Execute(@"INSERT OR IGNORE INTO transaction (BankName,Date,Delta,Balance,TimeString,SmsID,Ref) VALUES (@Address,@Body,@Date,@Type,@ContactName)", new { item.Address, item.Body, item.Date, item.Type, item.ContactName });
+                }
+                transaction.Commit();
+            }
+            sw.Stop();
+            oldLog.Debug("Insert " + rowAffected + " rows to database in: " + sw.ElapsedMilliseconds + " ms");
         }
 
         private List<SmsInfo> ReadSMSFile(string filePath)
@@ -395,9 +410,8 @@ namespace SmsParser2.UI_Parser
 
             for (int i = startRow + 1; i < endRow; ++i)
             {
-                VietcomInfo info = new VietcomInfo("", DateTime.MinValue)
+                VietcomInfo info = new VietcomInfo()
                 {
-                    From = VietcomInfo.SENDER_NAME,
                     ParseStatus = StatusBankInfo.Okay,
                 };
                 for (int j = 1; j <= numCol; ++j)
@@ -411,14 +425,14 @@ namespace SmsParser2.UI_Parser
                         }
                         else if (j == colNoiDung)
                         {
-                            info.Reference = text;
+                            info.Ref = text;
                         }
                         else if (j == colSoDu)
                         {
                             text = text.Replace(",", "").Replace(".", "");
                             if (long.TryParse(text, out long value))
                             {
-                                info.Total = value;
+                                info.Balance = value;
                             }
                         }
                         else if (j == colSoGhiCo)
@@ -443,7 +457,7 @@ namespace SmsParser2.UI_Parser
                             if (cut > 0)
                             {
                                 info.TimeString = text.Substring(0, cut);
-                                info.Message = text.Substring(cut).Trim(); //used as ID
+                                //info.Message = text.Substring(cut).Trim(); //used as ID
                                 if (!DateTime.TryParse(info.TimeString, out info.Date))
                                 {
                                     log.Error("Cannot parse date for vietcombank: " + info.TimeString);
@@ -492,11 +506,10 @@ namespace SmsParser2.UI_Parser
                 {
                     var tempSms = ReadSMSFile(inputFilePath);
                     ImportSmsToDatabase(tempSms);
-                    var list = LoadSmsFromDatabase();
-                    var listBank = ConvertSmsToBank(list);
-                    var linkBankDb = LoadBankFromDatabase();
+                    var listSmsFull = LoadSmsFromDatabase();
+                    var hashParsedSms = LoadParsedSmsIdFromDatabase();
+                    ConvertSmsToBank(listSmsFull, hashParsedSms);
                     log.Info("haha");
-
                 });
                 IsButtonEnabled = true;
             }

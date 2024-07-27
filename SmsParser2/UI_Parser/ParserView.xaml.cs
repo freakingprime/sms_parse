@@ -93,11 +93,6 @@ namespace SmsParser2.UI_Parser
             }
         }
 
-        private void BtnExport_Click(object sender, RoutedEventArgs e)
-        {
-            context.BtnExportClick();
-        }
-
         private void UserControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != null)

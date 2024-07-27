@@ -21,18 +21,16 @@ namespace SmsParser2.UI_Parser
 
         }
 
-        public long Delta = -2;
-        public long Total = -2;
-        public string Message = string.Empty;
-        public string From = string.Empty;
-        public StatusBankInfo ParseStatus = StatusBankInfo.Error;
-        public string TimeString = "none";
         public DateTime Date = DateTime.MinValue;
-        public string Reference = string.Empty;
+        public long Delta = -2;
+        public long Balance = -2;      
+        public string TimeString = "none";
+        public string Ref = string.Empty;
+        public StatusBankInfo ParseStatus = StatusBankInfo.Error;
 
         public override string ToString()
         {
-            return "Delta " + Delta + " | SD: " + Total + " | Time: " + TimeString + " | Ref: " + Reference;
+            return "Delta " + Delta + " | SD: " + Balance + " | Time: " + TimeString + " | Ref: " + Ref;
         }
     }
 }
