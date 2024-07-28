@@ -485,7 +485,21 @@ namespace SmsParser2.UI_Parser
             string outputPath = "";
             if (Directory.Exists(MySetting.Default.OutputFolder))
             {
-                outputPath = MySetting.Default.OutputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
+                outputPath = Path.Combine(MySetting.Default.OutputFolder, MySetting.Default.FileNamePrefix + ".xlsx");
+                if (File.Exists(outputPath))
+                {
+                    //backup
+                    string backupPath = Path.Combine(MySetting.Default.OutputFolder, MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx");
+                    try
+                    {
+                        File.Move(outputPath, backupPath);
+                    }
+                    catch (Exception e1)
+                    {
+                        oldLog.Error("Cannot backup Excel file to: " + backupPath, e1);
+                        return;
+                    }
+                }
             }
             else
             {
