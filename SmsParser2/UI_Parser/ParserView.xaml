@@ -80,15 +80,17 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-
         <GroupBox Header="SMS">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal"
-                            Margin="2">
+                <StackPanel Orientation="Horizontal">
                     <Label Width="{StaticResource LabelWidth}"
                            Content="XML File" />
-                    <TextBox Name="TxtXmlFile"
-                             TextChanged="TxtXmlFile_TextChanged" />
+                    <StackPanel Orientation="Vertical">
+                        <TextBox Name="TxtXmlFile"
+                                 TextChanged="TxtXmlFile_TextChanged" />
+                        <TextBlock Name="TxtXmlName" />
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal">
                         <Button Name="BtnBrowseXMLFile"
                                 Click="BtnBrowseXMLFile_Click"
@@ -100,15 +102,15 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal"
                             Margin="2">
-                    <Label Width="{StaticResource LabelWidth}"
-                           Content="XML Name" />
-                    <Label Name="TxtXmlName" />
+
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <StackPanel.Resources>
                         <Style TargetType="{x:Type CheckBox}">
                             <Setter Property="Margin"
                                     Value="2" />
+                            <Setter Property="VerticalAlignment"
+                                    Value="Center" />
                         </Style>
                     </StackPanel.Resources>
                     <CheckBox Content="Export errors to file"

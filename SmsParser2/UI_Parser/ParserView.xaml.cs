@@ -215,7 +215,7 @@ namespace SmsParser2.UI_Parser
         {
             MySetting.Default.XMLFilePath = ((TextBox)sender).Text;
             MySetting.Default.Save();
-            TxtXmlName.Content = Path.GetFileNameWithoutExtension(((TextBox)sender).Text);
+            TxtXmlName.Text = Path.GetFileNameWithoutExtension(((TextBox)sender).Text);
         }
 
         private void BtnImportSms_Click(object sender, RoutedEventArgs e)
