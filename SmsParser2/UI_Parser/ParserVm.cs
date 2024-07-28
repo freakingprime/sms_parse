@@ -122,7 +122,7 @@ namespace SmsParser2.UI_Parser
                 transaction.Commit();
             }
             sw.Stop();
-            oldLog.Debug("Insert " + rowAffected + " rows to database in: " + sw.ElapsedMilliseconds + " ms");
+            oldLog.Debug("Insert " + rowAffected + " SMS to database in: " + sw.ElapsedMilliseconds + " ms");
         }
 
         private List<SmsInfo> LoadSmsFromDatabase()
@@ -244,7 +244,7 @@ namespace SmsParser2.UI_Parser
                 oldLog.Error("Error (" + (listError.Count - 1) + ") is exported to: " + output);
             }
             sw.Stop();
-            oldLog.Debug("Insert " + rowAffected + " rows to database in: " + sw.ElapsedMilliseconds + " ms");
+            oldLog.Debug("Insert " + rowAffected + " bank info to database in: " + sw.ElapsedMilliseconds + " ms");
         }
 
         private void WriteBankToDatabase(List<BankInfoBase> list)

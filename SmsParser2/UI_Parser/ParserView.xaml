@@ -32,6 +32,8 @@
                         Value="300" />
                 <Setter Property="Margin"
                         Value="1" />
+                <Setter Property="VerticalContentAlignment"
+                        Value="Center" />
             </Style>
             <Style TargetType="{x:Type Label}">
                 <Setter Property="VerticalAlignment"
@@ -85,7 +87,7 @@
                     <Label Width="{StaticResource LabelWidth}"
                            Content="XML File" />
                     <TextBox Name="TxtXmlFile"
-                             TextChanged="TextXmlFile_TextChanged" />
+                             TextChanged="TxtXmlFile_TextChanged" />
                     <StackPanel Orientation="Horizontal">
                         <Button Name="BtnBrowseXMLFile"
                                 Click="BtnBrowseXMLFile_Click"
@@ -95,11 +97,17 @@
                                 Content="Load Latest" />
                     </StackPanel>
                 </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            Margin="2">
+                    <Label Width="{StaticResource LabelWidth}"
+                           Content="XML Name" />
+                    <Label Name="TxtXmlName" />
+                </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Button x:Name="BtnImportSms"
                             Content="Import SMS to DB"
                             Click="BtnImportSms_Click"
-                            IsEnabled="{Binding IsButtonEnabled}" />               
+                            IsEnabled="{Binding IsButtonEnabled}" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>

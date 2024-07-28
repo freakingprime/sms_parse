@@ -133,9 +133,9 @@ namespace SmsParser2.UI_Parser
                 Array.Sort(files);
                 for (int i = files.Length - 1; i >= 0; --i)
                 {
-                    if (files[i].Contains("sms"))
+                    if (files[i].Contains("sms-20", StringComparison.OrdinalIgnoreCase))
                     {
-                        MySetting.Default.XMLFilePath = files[i];
+                        TxtXmlFile.Text = files[i];
                         MySetting.Default.Save();
                         break;
                     }
@@ -213,10 +213,11 @@ namespace SmsParser2.UI_Parser
             MySetting.Default.Save();
         }
 
-        private void TextXmlFile_TextChanged(object sender, TextChangedEventArgs e)
+        private void TxtXmlFile_TextChanged(object sender, TextChangedEventArgs e)
         {
             MySetting.Default.XMLFilePath = ((TextBox)sender).Text;
             MySetting.Default.Save();
+            TxtXmlName.Content = Path.GetFileNameWithoutExtension(((TextBox)sender).Text);
         }
 
         private void BtnImportSms_Click(object sender, RoutedEventArgs e)
