@@ -11,7 +11,7 @@ namespace SmsParser2.UI_Parser
 
         public ShinhanInfo(SmsInfo sms)
         {
-            this.Date = sms.Date;
+            this.Date = sms.Date.AddMilliseconds(-sms.Date.Millisecond);
             foreach (string s in ignoredKeywords)
             {
                 if (sms.Body.Contains(s, StringComparison.OrdinalIgnoreCase))

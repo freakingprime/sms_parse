@@ -21,7 +21,7 @@ namespace SmsParser2.UI_Parser
     public partial class ParserView : UserControl
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
-
+        private static readonly LogController oldLog = LogController.Instance;
         public ParserView()
         {
             InitializeComponent();
@@ -135,8 +135,11 @@ namespace SmsParser2.UI_Parser
                 {
                     if (files[i].Contains("sms-20", StringComparison.OrdinalIgnoreCase))
                     {
+                        if (!files[i].Equals(MySetting.Default.XMLFilePath))
+                        {
+                            oldLog.Debug("Latest XML file is set: " + files[i]);
+                        }
                         TxtXmlFile.Text = files[i];
-                        MySetting.Default.Save();
                         break;
                     }
                 }
@@ -158,11 +161,6 @@ namespace SmsParser2.UI_Parser
             {
                 TxtNewVietcomFolder.Text = dialog.FolderName;
             }
-        }
-
-        private void BtnExportVietcom_Click(object sender, RoutedEventArgs e)
-        {
-            context.BtnExportVietcomClick();
         }
 
         private void BtnBrowseDatabase_Click(object sender, RoutedEventArgs e)
@@ -223,6 +221,24 @@ namespace SmsParser2.UI_Parser
         private void BtnImportSms_Click(object sender, RoutedEventArgs e)
         {
             context?.ButtonImportSmsToDB();
+        }
+
+        private void BtnImportVietcomExcel_Click(object sender, RoutedEventArgs e)
+        {
+            context?.ButtonImportVietcomExcel();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            BtnLoadLatest_Click(null, null);
+        }
+
+        private void BtnExport_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Do you want to export to Excel?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes)
+            {
+                context?.ButtonExport();
+            }
         }
     }
 }

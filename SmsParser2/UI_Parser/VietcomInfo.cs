@@ -6,13 +6,13 @@ using System.Text.RegularExpressions;
 
 namespace SmsParser2.UI_Parser
 {
-    public class VietcomInfo : BankInfoBase, IComparable<VietcomInfo>, IEquatable<VietcomInfo>
+    public class VietcomInfo : BankInfoBase
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
         public VietcomInfo(SmsInfo sms)
         {
-            this.Date = sms.Date;
+            this.Date = sms.Date.AddMilliseconds(-sms.Date.Millisecond);
             foreach (string s in ignoredKeywords)
             {
                 if (sms.Body.Contains(s, StringComparison.OrdinalIgnoreCase))
@@ -58,32 +58,5 @@ namespace SmsParser2.UI_Parser
         private readonly string[] ignoredKeywords = { "quy khach", "thu phi", "ma otp", "the vcb visa", "huy giao dich tren", "smartotp", "1900545413", "tinh nang an toan bao mat 3D secure" };
 
         public const string SENDER_NAME = "vietcombank";
-
-        public static readonly string[] VIETCOM_HEADER = { "Date", "ID", "Amount", "Balance", "Ref" };
-        public string[] GetValueArray()
-        {
-            List<string> list = new List<string>();
-            list.Add(Date.ToString("yyyy/MM/dd"));
-            list.Add("");
-            list.Add(Delta + "");
-            list.Add(Balance + "");
-            list.Add(Ref);
-            return list.ToArray();
-        }
-
-        public int CompareTo([AllowNull] VietcomInfo other)
-        {
-            int t = Date.CompareTo(other.Date);
-            if (t == 0)
-            {
-                //t = Message.CompareTo(other.Message);
-            }
-            return t;
-        }
-
-        public bool Equals([AllowNull] VietcomInfo other)
-        {
-            return Date.Equals(other.Date);
-        }
     }
 }

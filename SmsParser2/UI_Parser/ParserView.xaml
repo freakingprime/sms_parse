@@ -7,6 +7,7 @@
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              DataContextChanged="UserControl_DataContextChanged"
+             Loaded="UserControl_Loaded"
              d:DesignHeight="450"
              d:DesignWidth="800">
     <UserControl.DataContext>
@@ -23,7 +24,7 @@
                 <Setter Property="Height"
                         Value="25" />
                 <Setter Property="Margin"
-                        Value="1" />
+                        Value="2" />
                 <Setter Property="Padding"
                         Value="2" />
             </Style>
@@ -31,7 +32,7 @@
                 <Setter Property="Width"
                         Value="300" />
                 <Setter Property="Margin"
-                        Value="1" />
+                        Value="2" />
                 <Setter Property="VerticalContentAlignment"
                         Value="Center" />
             </Style>
@@ -42,8 +43,7 @@
         </StackPanel.Resources>
         <GroupBox Header="Output">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal"
-                            Margin="2">
+                <StackPanel Orientation="Horizontal">
                     <Label Width="{StaticResource LabelWidth}"
                            Content="Database" />
                     <TextBox Name="TxtDatabasePath"
@@ -52,8 +52,7 @@
                             Content="Browse"
                             Click="BtnBrowseDatabase_Click" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            Margin="2">
+                <StackPanel Orientation="Horizontal">
                     <Label Width="{StaticResource LabelWidth}"
                            Content="Output Folder" />
                     <TextBox Name="TxtOutputFile"
@@ -62,20 +61,22 @@
                             Content="Browse"
                             Click="BtnBrowseOutputFolder_Click" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            Margin="2">
+                <StackPanel Orientation="Horizontal">
                     <Label Content="Column Width"
                            Width="{StaticResource LabelWidth}" />
                     <TextBox Name="TxtColumnWidth"
                              TextChanged="TxtColumnWidth_TextChanged" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            Margin="2">
+                <StackPanel Orientation="Horizontal">
                     <Label Content="Prefix"
                            Width="{StaticResource LabelWidth}" />
                     <TextBox Name="TxtPrefix"
-                             TextChanged="TxtPrefix_TextChanged"
-                             Text="{Binding TxtFilenamePrefix}" />
+                             TextChanged="TxtPrefix_TextChanged" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="BtnExport"
+                            Content="Export"
+                            Click="BtnExport_Click" />
                 </StackPanel>
             </StackPanel>
         </GroupBox>
@@ -104,6 +105,16 @@
                     <Label Name="TxtXmlName" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="Margin"
+                                    Value="2" />
+                        </Style>
+                    </StackPanel.Resources>
+                    <CheckBox Content="Export errors to file"
+                              IsChecked="{Binding IsExportError}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
                     <Button x:Name="BtnImportSms"
                             Content="Import SMS to DB"
                             Click="BtnImportSms_Click"
@@ -117,18 +128,17 @@
                     <Label Content="Folder"
                            Width="{StaticResource LabelWidth}" />
                     <TextBox Name="TxtNewVietcomFolder"
-                             TextChanged="TxtNewVietcomFolder_TextChanged"
-                             Text="{Binding TxtNewVietcomFolder}" />
+                             TextChanged="TxtNewVietcomFolder_TextChanged" />
                     <Button Name="BtnBrowseNewVietcomFolder"
                             Content="Browse"
                             Click="BtnBrowseNewVietcomFolder_Click" />
                 </StackPanel>
-                <Button Name="BtnExportVietcom"
-                        Width="100"
-                        Content="Export Vietcom"
-                        Click="BtnExportVietcom_Click"
-                        HorizontalAlignment="Left"
-                        IsEnabled="{Binding IsButtonEnabled}" />
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="BtnImportVietcomExcel"
+                            Content="Import Vietcom Excel to DB"
+                            Click="BtnImportVietcomExcel_Click"
+                            IsEnabled="{Binding IsButtonEnabled}" />
+                </StackPanel>
             </StackPanel>
         </GroupBox>
     </StackPanel>

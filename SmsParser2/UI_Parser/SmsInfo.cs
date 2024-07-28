@@ -50,45 +50,5 @@ namespace SmsParser2.UI_Parser
             Body = GetValue("body", xmlText).Trim();
             ContactName = GetValue("contact_name", xmlText);
         }
-
-        public static readonly string[] EXCEL_HEADER = { "Address", "Date", "Name", "Type", "Body" };
-        public static readonly string[] BANK_HEADER = { "Address", "Date", "Amount", "Balance", "Time", "Ref" };
-
-        public string[] GetValueArray()
-        {
-            List<string> list = new List<string>();
-            list.Add(Address);
-            list.Add(Date.ToString("yyyy-MM-dd HH:mm:ss"));
-            list.Add(ContactName);
-            if (Type == 1)
-            {
-                list.Add("Received");
-            }
-            else
-            {
-                list.Add("Sent");
-            }
-            list.Add("'" + Body);
-            return list.ToArray();
-        }
-
-        public string[] GetBankArray()
-        {
-            List<string> list = new List<string>();
-            list.Add(Address);
-            list.Add(Date.ToString("yyyy-MM-dd HH:mm:ss"));
-            list.Add(MyBankInfo.Delta + "");
-            list.Add(MyBankInfo.Balance + "");
-            list.Add("T " + MyBankInfo.TimeString);
-            if (MyBankInfo.Ref.Length > 0)
-            {
-                list.Add(MyBankInfo.Ref);
-            }
-            else
-            {
-                list.Add("Full: " + Body);
-            }
-            return list.ToArray();
-        }
     }
 }

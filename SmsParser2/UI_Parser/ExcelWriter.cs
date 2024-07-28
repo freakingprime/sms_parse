@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Interop.Excel;
+using SmsParser2.DbModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace SmsParser2.UI_Parser
     public class ExcelWriter
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
+        private static readonly LogController oldLog = LogController.Instance;
 
         public ExcelWriter(string[] arrHeader)
         {
@@ -22,6 +24,11 @@ namespace SmsParser2.UI_Parser
             {
                 colHash[header[i].ToLower()] = i;
             }
+        }
+
+        public ExcelWriter()
+        {
+
         }
 
         private static readonly object misValue = System.Reflection.Missing.Value;
@@ -59,137 +66,136 @@ namespace SmsParser2.UI_Parser
 
         public void ExportSmsInfo(List<SmsInfo> listSmsInfo, string filePath)
         {
-            log.Debug("Writing: " + filePath);
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            Application excel = new Application();
-            if (excel == null)
-            {
-                log.Error("Excel is not properly installed");
-                return;
-            }
-            excel.DisplayAlerts = false;
-            Workbooks workbooks = excel.Workbooks;
-            Workbook workbook = workbooks.Add(misValue);
-            Worksheet sheet = (Worksheet)workbook.Worksheets.get_Item(1);
-            sheet.Name = DateTime.Now.ToString("All");
+            //log.Debug("Writing: " + filePath);
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
+            //Application excel = new Application();
+            //if (excel == null)
+            //{
+            //    log.Error("Excel is not properly installed");
+            //    return;
+            //}
+            //excel.DisplayAlerts = false;
+            //Workbooks workbooks = excel.Workbooks;
+            //Workbook workbook = workbooks.Add(misValue);
+            //Worksheet sheet = (Worksheet)workbook.Worksheets.get_Item(1);
+            //sheet.Name = DateTime.Now.ToString("All");
 
-            int numRows = listSmsInfo.Count + 1;
-            int numCols = header.Length;
-            var data = new object[numRows, numCols];
+            //int numRows = listSmsInfo.Count + 1;
+            //int numCols = header.Length;
+            //var data = new object[numRows, numCols];
 
-            for (int j = 0; j < numCols; ++j)
-            {
-                data[0, j] = header[j];
-            }
+            //for (int j = 0; j < numCols; ++j)
+            //{
+            //    data[0, j] = header[j];
+            //}
 
-            int rowIndex = 1;
+            //int rowIndex = 1;
 
-            foreach (SmsInfo info in listSmsInfo)
-            {
-                object[] col = info.GetValueArray();
-                for (int j = 0; j < col.Length; ++j)
-                {
-                    data[rowIndex, j] = col[j];
-                }
-                ++rowIndex;
-            }
+            //foreach (SmsInfo info in listSmsInfo)
+            //{
+            //    object[] col = info.GetValueArray();
+            //    for (int j = 0; j < col.Length; ++j)
+            //    {
+            //        data[rowIndex, j] = col[j];
+            //    }
+            //    ++rowIndex;
+            //}
 
-            DumpArrayToSheet(sheet, data);
+            //DumpArrayToSheet(sheet, data);
 
-            // Format file
+            //// Format file
 
-            sheet.Application.ActiveWindow.SplitRow = 1;
-            sheet.Application.ActiveWindow.FreezePanes = true;
+            //sheet.Application.ActiveWindow.SplitRow = 1;
+            //sheet.Application.ActiveWindow.FreezePanes = true;
 
-            sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
+            //sheet.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
 
-            Range firstRow = (Range)sheet.Rows[1];
-            firstRow.AutoFilter(1);
-            firstRow.Font.Bold = true;
+            //Range firstRow = (Range)sheet.Rows[1];
+            //firstRow.AutoFilter(1);
+            //firstRow.Font.Bold = true;
 
-            sheet.UsedRange.Borders.LineStyle = XlLineStyle.xlContinuous;
-            sheet.Columns.AutoFit();
-            ((Range)sheet.Columns[colHash["body"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
-            ((Range)sheet.Columns[colHash["body"] + 1]).WrapText = true;
-            ((Range)sheet.Columns[colHash["address"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
-            ((Range)sheet.Columns[colHash["address"] + 1]).HorizontalAlignment = XlHAlign.xlHAlignLeft;
+            //sheet.UsedRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+            //sheet.Columns.AutoFit();
+            //((Range)sheet.Columns[colHash["body"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
+            //((Range)sheet.Columns[colHash["body"] + 1]).WrapText = true;
+            //((Range)sheet.Columns[colHash["address"] + 1]).ColumnWidth = MySetting.Default.BodyColumnWidth;
+            //((Range)sheet.Columns[colHash["address"] + 1]).HorizontalAlignment = XlHAlign.xlHAlignLeft;
 
-            sheet.Rows.AutoFit();
+            //sheet.Rows.AutoFit();
 
-            //process bank info
-            Worksheet sheet2 = (Worksheet)workbook.Worksheets.get_Item(2);
-            sheet2.Name = DateTime.Now.ToString("Bank");
+            ////process bank info
+            //Worksheet sheet2 = (Worksheet)workbook.Worksheets.get_Item(2);
+            //sheet2.Name = DateTime.Now.ToString("Bank");
 
-            numRows = listSmsInfo.Count(x => x.MyBankInfo != null && x.MyBankInfo.ParseStatus != StatusBankInfo.Ignored) + 1;
-            numCols = SmsInfo.BANK_HEADER.Length;
-            var data2 = new object[numRows, numCols];
+            //numRows = listSmsInfo.Count(x => x.MyBankInfo != null && x.MyBankInfo.ParseStatus != StatusBankInfo.Ignored) + 1;
+            //numCols = SmsInfo.BANK_HEADER.Length;
+            //var data2 = new object[numRows, numCols];
 
-            for (int j = 0; j < numCols; ++j)
-            {
-                data2[0, j] = SmsInfo.BANK_HEADER[j];
-            }
+            //for (int j = 0; j < numCols; ++j)
+            //{
+            //    data2[0, j] = SmsInfo.BANK_HEADER[j];
+            //}
 
-            rowIndex = 1;
+            //rowIndex = 1;
 
-            foreach (SmsInfo item in listSmsInfo)
-            {
-                if (item.MyBankInfo != null && item.MyBankInfo.ParseStatus != StatusBankInfo.Ignored)
-                {
-                    object[] col = item.GetBankArray();
-                    for (int j = 0; j < col.Length; ++j)
-                    {
-                        data2[rowIndex, j] = col[j];
-                    }
-                    ++rowIndex;
-                }
-            }
+            //foreach (SmsInfo item in listSmsInfo)
+            //{
+            //    if (item.MyBankInfo != null && item.MyBankInfo.ParseStatus != StatusBankInfo.Ignored)
+            //    {
+            //        object[] col = item.GetBankArray();
+            //        for (int j = 0; j < col.Length; ++j)
+            //        {
+            //            data2[rowIndex, j] = col[j];
+            //        }
+            //        ++rowIndex;
+            //    }
+            //}
 
-            DumpArrayToSheet(sheet2, data2);
+            //DumpArrayToSheet(sheet2, data2);
 
-            //format bank sheet
-            sheet2.Activate();
-            sheet2.Application.ActiveWindow.SplitRow = 1;
-            sheet2.Application.ActiveWindow.FreezePanes = true;
+            ////format bank sheet
+            //sheet2.Activate();
+            //sheet2.Application.ActiveWindow.SplitRow = 1;
+            //sheet2.Application.ActiveWindow.FreezePanes = true;
 
-            sheet2.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
+            //sheet2.Range[getColumnRangeText(1, numCols)].VerticalAlignment = XlVAlign.xlVAlignTop;
 
-            Range firstRowBank = (Range)sheet2.Rows[1];
-            firstRowBank.AutoFilter(1);
-            firstRowBank.Font.Bold = true;
+            //Range firstRowBank = (Range)sheet2.Rows[1];
+            //firstRowBank.AutoFilter(1);
+            //firstRowBank.Font.Bold = true;
 
-            ((Range)sheet2.Columns[3]).NumberFormat = "#,##0";
-            ((Range)sheet2.Columns[4]).Style = "Comma [0]";
+            //((Range)sheet2.Columns[3]).NumberFormat = "#,##0";
+            //((Range)sheet2.Columns[4]).Style = "Comma [0]";
 
-            sheet2.UsedRange.Borders.LineStyle = XlLineStyle.xlContinuous;
-            sheet2.Columns.AutoFit();
-            ((Range)sheet2.Columns[6]).ColumnWidth = MySetting.Default.BodyColumnWidth;
-            ((Range)sheet.Columns[6]).WrapText = true;
+            //sheet2.UsedRange.Borders.LineStyle = XlLineStyle.xlContinuous;
+            //sheet2.Columns.AutoFit();
+            //((Range)sheet2.Columns[6]).ColumnWidth = MySetting.Default.BodyColumnWidth;
+            //((Range)sheet.Columns[6]).WrapText = true;
 
-            sheet.Rows.AutoFit();
+            //sheet.Rows.AutoFit();
 
-            workbook.Password = "q";
-            workbook.SaveAs(filePath, XlFileFormat.xlOpenXMLWorkbook);
-            workbook.Close();
-            excel.Quit();
+            //workbook.Password = "q";
+            //workbook.SaveAs(filePath, XlFileFormat.xlOpenXMLWorkbook);
+            //workbook.Close();
+            //excel.Quit();
 
-            // Release our resources.
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(workbooks);
-            Marshal.ReleaseComObject(excel);
-            Marshal.FinalReleaseComObject(excel);
+            //// Release our resources.
+            //Marshal.ReleaseComObject(workbook);
+            //Marshal.ReleaseComObject(workbooks);
+            //Marshal.ReleaseComObject(excel);
+            //Marshal.FinalReleaseComObject(excel);
 
-            log.Debug("Finish writing in " + stopwatch.ElapsedMilliseconds + " ms");
-            stopwatch.Stop();
+            //log.Debug("Finish writing in " + stopwatch.ElapsedMilliseconds + " ms");
+            //stopwatch.Stop();
         }
 
         public static Application GlobalExcel;
 
-        public void ExportVietcomInfo(List<VietcomInfo> listVietcomInfo, string filePath)
+        public void ExportVietcomInfo(List<DbBank> listBank, string filePath)
         {
-            log.Debug("Writing: " + filePath);
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            oldLog.Debug("Begin writing to Excel: " + filePath);
+            Stopwatch sw = Stopwatch.StartNew();
             if (GlobalExcel == null)
             {
                 GlobalExcel = new Application();
@@ -203,9 +209,9 @@ namespace SmsParser2.UI_Parser
             Workbooks workbooks = GlobalExcel.Workbooks;
             Workbook workbook = workbooks.Add(misValue);
             Worksheet sheet = (Worksheet)workbook.Worksheets.get_Item(1);
-            sheet.Name = "Vietcombank";
+            sheet.Name = "Bank";
 
-            int numRows = listVietcomInfo.Count + 1;
+            int numRows = listBank.Count + 1;
             int numCols = header.Length;
             var data = new object[numRows, numCols];
 
@@ -216,7 +222,7 @@ namespace SmsParser2.UI_Parser
 
             int rowIndex = 1;
 
-            foreach (VietcomInfo info in listVietcomInfo)
+            foreach (VietcomInfo info in listBank)
             {
                 object[] col = info.GetValueArray();
                 for (int j = 0; j < col.Length; ++j)
@@ -265,20 +271,20 @@ namespace SmsParser2.UI_Parser
             _ = Marshal.ReleaseComObject(GlobalExcel);
             _ = Marshal.FinalReleaseComObject(GlobalExcel);
 
-            log.Debug("Finish writing in " + stopwatch.ElapsedMilliseconds + " ms");
-            stopwatch.Stop();
+            log.Debug("Finish writing in " + sw.ElapsedMilliseconds + " ms");
+            sw.Stop();
         }
 
-        private string getColumnRangeText(int x, int y)
+        private string GetColumnRangeText(int x, int y)
         {
             char begin = (char)((x + 64) % 255);
             char end = (char)((y + 64) % 255);
             return begin + ":" + end;
         }
 
-        private string getColumnRangeText(int x)
+        private string GetColumnRangeText(int x)
         {
-            return getColumnRangeText(x, x);
+            return GetColumnRangeText(x, x);
         }
     }
 }

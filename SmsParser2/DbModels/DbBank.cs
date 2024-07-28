@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmsParser2.DbModels
 {
-    public class DbTransaction
+    public class DbBank
     {
-        public DbTransaction()
+        public DbBank()
         {
         }
 
