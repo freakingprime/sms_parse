@@ -485,13 +485,14 @@ namespace SmsParser2.UI_Parser
             string outputPath = "";
             if (Directory.Exists(MySetting.Default.OutputFolder))
             {
-                outputPath = MySetting.Default.OutputFolder + "\\" + MySetting.Default.FileNamePrefix + "_Vietcom_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
+                outputPath = MySetting.Default.OutputFolder + "\\" + MySetting.Default.FileNamePrefix + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".xlsx";
             }
             else
             {
                 oldLog.Error("Directory does not exist: " + MySetting.Default.OutputFolder);
                 return;
             }
+            IsButtonEnabled = false;
             await Task.Run(() =>
             {
                 List<DbBank> listBank = new List<DbBank>();
@@ -516,6 +517,7 @@ namespace SmsParser2.UI_Parser
                 ExcelWriter writer = new ExcelWriter();
                 writer.ExportVietcomInfo(listBank, outputPath);
             });
+            IsButtonEnabled = true;
         }
     }
 }
