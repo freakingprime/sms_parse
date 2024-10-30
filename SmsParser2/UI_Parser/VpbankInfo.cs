@@ -27,7 +27,7 @@ namespace SmsParser2.UI_Parser
             {
                 //giao dich thanh cong
                 GroupCollection groups = changeMatch.Groups;
-                bool okay = long.TryParse(groups["amount"].Value.Replace(",", ""), out Delta);
+                bool okay = long.TryParse(groups["amount"].Value.Replace(",", "").Replace(".", ""), out Delta);
                 Delta = -Delta;
                 Balance = 0;
                 if (okay)
@@ -42,7 +42,7 @@ namespace SmsParser2.UI_Parser
                 {
                     //giao dich bi huy
                     GroupCollection groups = changeMatch.Groups;
-                    bool okay = long.TryParse(groups["amount"].Value.Replace(",", ""), out Delta);
+                    bool okay = long.TryParse(groups["amount"].Value.Replace(",", "").Replace(".", ""), out Delta);
                     Balance = 0;
                     if (okay)
                     {
@@ -61,8 +61,8 @@ namespace SmsParser2.UI_Parser
                 }
             }
         }
-        private readonly Regex regexChange1 = new Regex(@"the vpbank 5.+?4985.+?chi tieu\s+(?<amount>[\d,]+)", RegexOptions.IgnoreCase);
-        private readonly Regex regexChange2 = new Regex(@"the vpbank 5.+?4985.+?ghi co\s+(?<amount>[\d,]+)", RegexOptions.IgnoreCase);
+        private readonly Regex regexChange1 = new Regex(@"the.*?5.+?4985.+?chi tieu\s+[+-]*(?<amount>[\d,.]+)", RegexOptions.IgnoreCase);
+        private readonly Regex regexChange2 = new Regex(@"the.*?5.+?4985.+?ghi co\s+[+-]*(?<amount>[\d,.]+)", RegexOptions.IgnoreCase);
         private readonly Regex regexTime = new Regex(@"luc ([\d\s/-:]+)", RegexOptions.IgnoreCase);
 
         private readonly string[] ignoredKeywords = { "otp", "ky han", "ma xac thuc", "khong giao dich", "031090010681", "1900545415", "mat khau", "phe duyet", "phat hanh", "da duoc chot sao ke.", "sap den han TT.", "VPBank TB:", "(QC)", "[QC]", "diem VPB Loyalty", "VPB cap nhat yau cau", "da duoc xu ly va phan hoi qua email", "Tinh nang tra gop du no vua", "Tai khoan cua ban da mo dich vu tai chinh toan", "Chuc mung Quy" };

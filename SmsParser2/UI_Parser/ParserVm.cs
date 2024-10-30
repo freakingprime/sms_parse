@@ -305,7 +305,6 @@ namespace SmsParser2.UI_Parser
                     var listSmsFull = LoadSmsFromDatabase();
                     var hashParsedSms = LoadParsedSmsIdFromDatabase();
                     ConvertSmsToBank(listSmsFull, hashParsedSms);
-                    log.Info("haha");
                 });
                 IsButtonEnabled = true;
             }
@@ -365,7 +364,6 @@ namespace SmsParser2.UI_Parser
                 {
                     oldLog.Error("Cannot get parsed SmsID from database", e1);
                 }
-
             }
             sw.Stop();
             oldLog.Debug("Loaded " + ret.Count + " SmsID from database in: " + sw.ElapsedMilliseconds + " ms");

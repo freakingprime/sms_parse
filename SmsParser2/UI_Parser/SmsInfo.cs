@@ -13,7 +13,7 @@ namespace SmsParser2.UI_Parser
     {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.Assembly.GetEntryAssembly(), System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name);
 
-        public int ID;
+        public int ID = 0;
         public string Address = string.Empty;
         public string Body = string.Empty;
         public DateTime Date = DateTime.MinValue;
